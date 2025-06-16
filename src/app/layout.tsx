@@ -1,4 +1,5 @@
-import "@/app/ui/globals.css";
+import AuthProvider from "@/context/AuthProvider";
+import "@/app/globals.css";
 import { poppins } from "../lib/fonts";
 
 export default function RootLayout({
@@ -8,7 +9,9 @@ export default function RootLayout({
 }) {
   return (
     <html>
-      <body className={`${poppins.className} antialiased`}>{children}</body>
+      <AuthProvider>
+        <body className={`${poppins.className} antialiased`}>{children}</body>
+      </AuthProvider>
     </html>
   );
 }

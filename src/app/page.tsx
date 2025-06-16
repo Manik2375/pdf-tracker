@@ -1,3 +1,10 @@
+"use client";
+// import { useSession } from "next-auth/react";
+// import { FormEvent } from "react";
+// import { useRouter } from "next/navigation";
+// import { signIn } from "next-auth/react"
+import { signIn } from "next-auth/react";
+
 const oauthApplications = [
   {
     id: 1,
@@ -49,13 +56,33 @@ export default function Home() {
   return (
     <div className="login w-full h-screen bg-base-100 grid grid-rows-[max-content_max-content_1fr] md:grid-rows-[initial] md:place-items-center md:grid-cols-[3fr_2fr]">
       <div className="w-full mt-10 flex justify-center p-5 md:pr-0 flex-wrap">
-        <form className="relative w-[90%] pb-10 md:p-15  max-w-[40em] border-b-primary/50 border-b-2 md:border-b-0  after:left-[50%] after:top-full  md:border-r-primary/50 md:border-r-2 after:content-['OR'] after:absolute md:after:left-full md:after:top-[50%] after:translate-[-50%] after:w-10 after:h-10 after:bg-base-100 after:grid after:place-items-center after:text-sm">
-          <h2 className="text-center text-2xl ">Log in</h2>
+        <form
+          className="relative w-[90%] pb-10 md:p-15  max-w-[40em] border-b-primary/50 border-b-2 md:border-b-0  after:left-[50%] after:top-full  md:border-r-primary/50 md:border-r-2 after:content-['OR'] after:absolute md:after:left-full md:after:top-[50%] after:translate-[-50%] after:w-10 after:h-10 after:bg-base-100 after:grid after:place-items-center after:text-sm"
+          action={(formdata) => {
+            const email = formdata.get("email");
+            const password = formdata.get("password");
+            signIn("credentials", { email, password });
+          }}
+        >
+          <h2 className="text-center text-2xl ">
+            Sign Up{" "}
+            <input
+              type="checkbox"
+              style={{ "--input-color": "var(--color-base-content)" } as React.CSSProperties}
+              className="toggle toggle-xl mx-5"
+            />{" "}
+            Log In
+          </h2>
           <fieldset className="fieldset mt-8">
             <legend className="fieldset-legend font-normal tracking-wider">
               Email address
             </legend>
-            <input type="email" className="input validator w-full" required />
+            <input
+              type="email"
+              name="email"
+              className="input validator w-full"
+              required
+            />
             <p className="validator-hint hidden">
               Please enter valid email address
             </p>
@@ -68,6 +95,7 @@ export default function Home() {
             <label className="input validator w-full">
               <input
                 type="password"
+                name="password"
                 required
                 minLength={8}
                 pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"

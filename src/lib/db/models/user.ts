@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document, Model } from "mongoose";
 import bcrypt from "bcrypt";
 
 export interface IUser extends Document {
@@ -79,5 +79,5 @@ userSchema.pre("save", async function (next) {
 });
 
 // passing out model directly
-export const User =
+export const User: Model<IUser> =
   mongoose.models.User || mongoose.model<IUser>("User", userSchema);

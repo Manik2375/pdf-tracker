@@ -15,7 +15,11 @@ declare global {
 }
 
 
-const cached = global.mongoose;
+let cached = global.mongoose;
+
+if (!cached) {
+    cached  = global.mongoose = {conn: null, promise: null}
+}
 
 async function connectToDatabase() {
     if (cached.conn) {
@@ -25,6 +29,7 @@ async function connectToDatabase() {
         cached.promise = mongoose.connect(MONGODB_URI!, {
             bufferCommands: false
         }).then(mongoose => mongoose)
+        console.log("A new connection done")
     }
 
     try {
