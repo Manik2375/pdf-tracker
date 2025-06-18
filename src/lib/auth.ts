@@ -1,4 +1,4 @@
-import {NextAuthOptions} from "next-auth";
+import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
@@ -6,7 +6,7 @@ import connectToDatabase from "@/lib/db/connection";
 import {User} from "@/lib/db/models/user";
 import bcrypt from "bcrypt";
 
-export const AuthOptions: NextAuthOptions = {
+export const {auth, handlers, signIn, signOut} = NextAuth({
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -42,8 +42,6 @@ export const AuthOptions: NextAuthOptions = {
       },
     }),
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID ?? "",
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
       authorization: {
         params: {
           prompt: "consent",
@@ -52,12 +50,8 @@ export const AuthOptions: NextAuthOptions = {
         }
       },
     }),
-    GitHubProvider({
-      clientId: process.env.GITHUB_ID!,
-      clientSecret: process.env.GITHUB_SECRET!,
-    })
+    GitHubProvider
   ],
-  secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: "jwt",
   },
@@ -88,4 +82,4 @@ export const AuthOptions: NextAuthOptions = {
   pages: {
     signIn: "/",
   },
-};
+});
