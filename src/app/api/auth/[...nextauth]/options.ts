@@ -1,7 +1,9 @@
-import { NextAuthOptions } from "next-auth";
+import {NextAuthOptions} from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
+import GitHubProvider from "next-auth/providers/github";
 import connectToDatabase from "@/lib/db/connection";
-import { User } from "@/lib/db/models/user";
+import {User} from "@/lib/db/models/user";
 import bcrypt from "bcrypt";
 
 export const AuthOptions: NextAuthOptions = {
@@ -10,8 +12,8 @@ export const AuthOptions: NextAuthOptions = {
       name: "Credentials",
       id: "credentials",
       credentials: {
-        username: { label: "Email", type: "text" },
-        password: { label: "Password", type: "password" },
+        username: {label: "Email", type: "text"},
+        password: {label: "Password", type: "password"},
       },
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       async authorize(credentials: any): Promise<any> {
@@ -27,8 +29,8 @@ export const AuthOptions: NextAuthOptions = {
             throw new Error("Please verify the account first");
           }
           const isPasswordValid = await bcrypt.compare(
-            credentials.password,
-            user.password
+              credentials.password,
+              user.password
           );
           if (isPasswordValid) {
             return user;
@@ -39,6 +41,21 @@ export const AuthOptions: NextAuthOptions = {
         }
       },
     }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID ?? "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
+      authorization: {
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code"
+        }
+      },
+    }),
+    GitHubProvider({
+      clientId: process.env.GITHUB_ID!,
+      clientSecret: process.env.GITHUB_SECRET!,
+    })
   ],
   secret: process.env.NEXTAUTH_SECRET,
   session: {
@@ -48,22 +65,22 @@ export const AuthOptions: NextAuthOptions = {
     maxAge: 60 * 60 * 24 * 30
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({token, user}) {
       if (user) {
         token._id = user._id?.toString();
         token.name = user.name;
-        token.isVerified = user.isEmailVerified;
+        token.isEmailVerified = user.isEmailVerified;
         token.test = true;
       }
       console.log("\n\nJWT callback", user)
       return token;
     },
-    async session({ session, token }) {
+    async session({session, token}) {
       console.log("SEssion ran\n\n", token)
       if (token) {
         session.user._id = token._id?.toString();
         session.user.name = token.name;
-        session.user.isEmailVerified = token.isVerified;
+        session.user.isEmailVerified = token.isEmailVerified;
       }
       return session;
     },
