@@ -53,6 +53,7 @@ export const userSchema = new Schema<IUser>(
     },
     providerID: {
       type: String,
+      unique: true,
       sparse: true,
     },
     isEmailVerified: {
