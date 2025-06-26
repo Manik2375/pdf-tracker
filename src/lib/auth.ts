@@ -90,8 +90,9 @@ export const {auth, handlers, signIn, signOut} = NextAuth({
             token._id = user._id?.toString();
             token.name = user.name;
             token.isEmailVerified = user.isEmailVerified;
-            token.test = true;
+            token.avatar = user.avatar ?? user.image;
           }
+          console.log("USER", user);
           return token;
         },
         async session({session, token}) {
@@ -99,6 +100,7 @@ export const {auth, handlers, signIn, signOut} = NextAuth({
             session.user._id = token._id?.toString();
             session.user.name = token.name;
             session.user.isEmailVerified = token.isEmailVerified;
+            session.user.avatar = token.avatar ?? token.image;
           }
           return session;
         },

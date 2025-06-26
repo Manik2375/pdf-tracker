@@ -11,7 +11,11 @@ export default function RootLayout({
   return (
     <html>
       <AuthProvider>
-        <body className={`${poppins.className} antialiased`}>{children}</body>
+        <body
+          className={`${poppins.className} antialiased w-full min-h-screen`}
+        >
+          {children}
+        </body>
       </AuthProvider>
     </html>
   );

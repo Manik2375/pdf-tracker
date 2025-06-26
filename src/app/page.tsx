@@ -59,109 +59,130 @@ type FormState = "signup" | "login"
 export default function Home() {
   const [formState, setFormState] = useState<FormState>("login");
   return (
-      <div className="w-full min-h-screen p-5 bg-base-300 grid place-items-center md:place-content-center gap-6 md:gap-8 md:pt-0">
-        <div className="flex flex-col items-center justify-center gap-2">
-          <Image src="/logo.png" alt="Logo" width={100} height={100} className="rounded-full"/>
-          <h1 className="text-4xl">PDF Tracker</h1>
-        </div>
-        <div
-            className="bg-base-200 px-5 w-full rounded-3xl grid grid-rows-[max-content_max-content_1fr] md:grid-rows-[initial] md:place-items-center md:grid-cols-[3fr_2fr]">
-          <div className="w-full  flex justify-center p-5 md:pr-0 flex-wrap">
-            <form
-                className="relative w-[90%] pb-10 md:p-15 md:pl-0  max-w-[40em] border-b-primary/50 border-b-2 md:border-b-0  after:left-[50%] after:top-full  md:border-r-primary/50 md:border-r-2 after:content-['OR'] after:absolute md:after:left-full md:after:top-[50%] after:translate-[-50%] after:w-10 after:h-10 after:bg-base-200 after:grid after:place-items-center after:text-sm"
-                action={async (formdata) => {
-                  const email = formdata.get("email");
-                  const password = formdata.get("password");
-                  if (!email || !password) {
-                    return;
-                  }
-                  if (formState === "login") {
-                    await signIn("credentials", {email, password});
-                  } else {
-                    try {
-                      await handleSignUp(email as string, password as string);
-                      await signIn("credentials", {email, password});
-                    } catch (e) {
-                      console.error(e);
-                    }
-                  }
-                }}
-            >
-              <h2 className="text-center text-[1.65rem] text-base-content w-max mx-auto">
-                <label htmlFor="theme" className="hover:opacity-70 has-[+input:checked]:opacity-40 has-[+input:checked]:hover:opacity-60 cursor-pointer ">Sign Up</label>{" "}
-                <input
-                    id="theme"
-                    type="checkbox"
-                    style={{"--input-color": "var(--color-base-content)"} as React.CSSProperties}
-                    className="toggle toggle-xl mx-2 md:mx-5 peer"
-                    checked={formState === "login"}
-                    onChange={() => setFormState(formState === "login" ? "signup" : "login")}
-                />
-                {" "}
-                <label htmlFor="theme" className="hover:opacity-70 peer-[:not(:checked)]:opacity-40 peer-[:not(:checked)]:hover:opacity-60 cursor-pointer">Log In</label>
-              </h2>
-              <fieldset className="fieldset mt-8">
-                <legend className="fieldset-legend font-normal tracking-wider">
-                  Email address
-                </legend>
-                <input
-                    type="email"
-                    name="email"
-                    className="input validator w-full"
-                    required
-                />
-                <p className="validator-hint hidden">
-                  Please enter valid email address
-                </p>
-              </fieldset>
-
-              <fieldset className="fieldset">
-                <legend className="fieldset-legend font-normal tracking-wider">
-                  Passwords
-                </legend>
-
-                <label className="input validator w-full">
-                  <input
-                      type="password"
-                      name="password"
-                      required
-                      minLength={8}
-                      pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
-                      title="Must be more than 8 characters, including number, lowercase letter, uppercase letter"
-                  />
-                </label>
-                <p className="validator-hint hidden  ">
-                  Must be more than 8 characters, including
-                  <br/>
-                  At least one number <br/>
-                  At least one lowercase letter <br/>
-                  At least one uppercase letter
-                </p>
-              </fieldset>
-              <button
-                  type="submit"
-                  className="btn btn-primary mt-7 w-full tracking-wider font-medium"
+    <div className="w-full min-h-screen p-5 bg-base-300 grid place-items-center md:place-content-center gap-6 md:gap-8 md:pt-0">
+      <div className="flex flex-col items-center justify-center gap-2">
+        <Image
+          src="/logo.png"
+          alt="Logo"
+          width={100}
+          height={100}
+          className="rounded-full"
+        />
+        <h1 className="text-4xl">PDF Tracker</h1>
+      </div>
+      <div className="bg-base-200 px-5 w-full rounded-3xl grid grid-rows-[max-content_max-content_1fr] md:grid-rows-[initial] md:place-items-center md:grid-cols-[3fr_2fr]">
+        <div className="w-full  flex justify-center p-5 md:pr-0 flex-wrap">
+          <form
+            className="relative w-[90%] pb-10 md:p-15 md:pl-0  max-w-[40em] border-b-primary/50 border-b-2 md:border-b-0  after:left-[50%] after:top-full  md:border-r-primary/50 md:border-r-2 after:content-['OR'] after:absolute md:after:left-full md:after:top-[50%] after:translate-[-50%] after:w-10 after:h-10 after:bg-base-200 after:grid after:place-items-center after:text-sm"
+            onSubmit={async (e) => {
+              e.preventDefault();
+              const formdata = new FormData(e.currentTarget);
+              const email = formdata.get("email");
+              const password = formdata.get("password");
+              if (!email || !password) {
+                return;
+              }
+              if (formState === "login") {
+                await signIn("credentials", { email, password });
+              } else {
+                try {
+                  await handleSignUp(email as string, password as string);
+                  await signIn("credentials", { email, password });
+                } catch (e) {
+                  console.error(e);
+                }
+              }
+            }}
+          >
+            <h2 className="text-center text-[1.65rem] text-base-content w-max mx-auto">
+              <label
+                htmlFor="theme"
+                className="hover:opacity-70 has-[+input:checked]:opacity-40 has-[+input:checked]:hover:opacity-60 cursor-pointer "
               >
-                {formState === "login" ? "Log in" : "Sign Up"}
+                Sign Up
+              </label>{" "}
+              <input
+                id="theme"
+                type="checkbox"
+                style={
+                  {
+                    "--input-color": "var(--color-base-content)",
+                  } as React.CSSProperties
+                }
+                className="toggle toggle-xl mx-2 md:mx-5 peer"
+                checked={formState === "login"}
+                onChange={() =>
+                  setFormState(formState === "login" ? "signup" : "login")
+                }
+              />{" "}
+              <label
+                htmlFor="theme"
+                className="hover:opacity-70 peer-[:not(:checked)]:opacity-40 peer-[:not(:checked)]:hover:opacity-60 cursor-pointer"
+              >
+                Log In
+              </label>
+            </h2>
+            <fieldset className="fieldset mt-8">
+              <legend className="fieldset-legend font-normal tracking-wider">
+                Email address
+              </legend>
+              <input
+                type="email"
+                name="email"
+                className="input validator w-full"
+                required
+              />
+              <p className="validator-hint hidden">
+                Please enter valid email address
+              </p>
+            </fieldset>
+
+            <fieldset className="fieldset">
+              <legend className="fieldset-legend font-normal tracking-wider">
+                Passwords
+              </legend>
+
+              <label className="input validator w-full">
+                <input
+                  type="password"
+                  name="password"
+                  required
+                  minLength={8}
+                  pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+                  title="Must be more than 8 characters, including number, lowercase letter, uppercase letter"
+                />
+              </label>
+              <p className="validator-hint hidden  ">
+                Must be more than 8 characters, including
+                <br />
+                At least one number <br />
+                At least one lowercase letter <br />
+                At least one uppercase letter
+              </p>
+            </fieldset>
+            <button
+              type="submit"
+              className="btn btn-primary mt-7 w-full tracking-wider font-medium"
+            >
+              {formState === "login" ? "Log in" : "Sign Up"}
+            </button>
+          </form>
+        </div>
+        <div className="p-8 md:mr-auto flex items-center justify-center md:justify-start flex-col gap-5">
+          {oauthApplications.map((app) => {
+            return (
+              <button
+                key={app.id}
+                className="btn bg-base-100  px-11 py-2 font-normal tracking-wider rounded-2xl wrap-break-word h-auto w-auto"
+                onClick={() => signIn(app.providerName)}
+              >
+                {app.logo}
+                Continue with {app.title}
               </button>
-            </form>
-          </div>
-          <div className="p-8 md:mr-auto flex items-center justify-center md:justify-start flex-col gap-5">
-            {oauthApplications.map((app) => {
-              return (
-                  <button
-                      key={app.id}
-                      className="btn bg-base-100  px-11 py-2 font-normal tracking-wider rounded-2xl wrap-break-word h-auto w-auto"
-                      onClick={() => signIn(app.providerName)}
-                  >
-                    {app.logo}
-                    Continue with {app.title}
-                  </button>
-              );
-            })}
-          </div>
+            );
+          })}
         </div>
       </div>
-  )
-      ;
+    </div>
+  );
 }
