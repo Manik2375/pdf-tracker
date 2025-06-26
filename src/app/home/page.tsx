@@ -27,7 +27,7 @@ export default async function Home() {
           />
           <BookCard
             bookName="Something"
-            coverPicture=;{"/logo.png"}
+            coverPicture={"/logo.png"}
             progress={20}
           />
           <BookCard
