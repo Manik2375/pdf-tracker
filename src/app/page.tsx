@@ -1,6 +1,6 @@
 "use client";
 import {signIn} from "next-auth/react";
-import handleSignUp from "@/app/api/auth/signup";
+import { handleSignUp } from "@/lib/actions";
 import React, {useState} from "react";
 import Image from "next/image";
 

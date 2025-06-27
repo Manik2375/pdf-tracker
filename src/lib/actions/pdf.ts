@@ -1,5 +1,4 @@
 "use server";
-
 import { v2 as cloudinary } from "cloudinary";
 
 cloudinary.config({
@@ -9,7 +8,7 @@ cloudinary.config({
   secure: true,
 });
 
-export default async function generateUploadSignature(): Promise<{
+export async function generateUploadSignature(): Promise<{
   signature: string;
   timestamp: number;
   folder: string;
