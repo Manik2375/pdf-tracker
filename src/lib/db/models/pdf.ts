@@ -7,6 +7,7 @@ export interface IPDF extends Document {
   author: string;
   folder: string;
   userId: mongoose.Types.ObjectId;
+  progress: number;
   cover: string;
   createdAt: Date;
   updatedAt: Date;
@@ -33,6 +34,10 @@ export const pdfSchema = new Schema<IPDF>(
     },
     cover: {
       type: String,
+      required: true,
+    },
+    progress:{
+      type: Number,
       required: true,
     },
     userId: {

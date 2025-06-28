@@ -35,7 +35,7 @@ export default function PdfUploader() {
         body: formData,
       },
     ).then((res) => res.json());
-    console.log(uploadResponse.public_id);
+    console.log(uploadResponse);
     await uploadPdfMetadata({
       pdfId: uploadResponse.public_id,
       folder,

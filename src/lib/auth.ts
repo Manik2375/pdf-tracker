@@ -69,7 +69,7 @@ export const {auth, handlers, signIn, signOut} = NextAuth({
 
           const existingUser = await User.findOne({email: user.email})
           if (existingUser) {
-            user._id = existingUser._id;
+            user._id = existingUser._id?.toString();
             user.isEmailVerified = existingUser.isEmailVerified;
             return true;
           }

@@ -32,6 +32,7 @@ export async function uploadPdfMetadata({
     title,
     description,
     author,
+    progress: 1,
     userId: session.user._id,
     cover,
   });
