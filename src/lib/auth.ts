@@ -94,7 +94,6 @@ export const {auth, handlers, signIn, signOut} = NextAuth({
             token.isEmailVerified = user.isEmailVerified;
             token.avatar = user.avatar ?? user.image;
           }
-          console.log("USER", user);
           return token;
         },
         async session({session, token}) {

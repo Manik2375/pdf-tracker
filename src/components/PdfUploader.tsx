@@ -8,7 +8,6 @@ export default function PdfUploader() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [success, setSuccess] = useState<boolean>(false);
-
   const handleUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     setSuccess(false);
     const file = event.target.files?.[0];
@@ -38,13 +37,13 @@ export default function PdfUploader() {
     await uploadPdfMetadata({
       pdfId: uploadResponse.public_id,
       folder,
-      title: "The chronicales of owl",
+      title: "The chronicles of owl",
       description: "The owl",
       author: "The owl",
       cover:
         "https://s2982.pcdn.co/wp-content/uploads/2018/06/the-barn-owls-by-tony-johnston-book-cover.jpg.optimal.jpg",
     });
-   
+
     setSuccess(true);
     try {
     } catch (error) {
@@ -66,7 +65,7 @@ export default function PdfUploader() {
       >
         Upload PDF
       </button>
-      <dialog className="modal" ref={modalRef}>
+      <dialog className="modal backdrop-blur-xs" ref={modalRef}>
         <div className="modal-box ">
           <h3 className="font-bold text-2xl text-primary">Upload PDF</h3>
           <div className="flex mt-12 gap-2 items-center">
@@ -107,6 +106,22 @@ export default function PdfUploader() {
             ) : (
               ""
             )}
+          </div>
+          <div role="alert" className="alert mt-8">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              className="h-6 w-6 shrink-0 stroke-current"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              ></path>
+            </svg>
+            <span>Maximum file size limit is 10MB</span>
           </div>
           <div role="alert" className="alert alert-warning mt-5">
             <svg
