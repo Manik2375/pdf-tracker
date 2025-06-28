@@ -1,8 +1,9 @@
 "use server";
 
-import { PDF } from "@/lib/db/models/pdf";
 import { auth } from "@/lib/auth";
 import connectToDatabase from "@/lib/db/connection";
+import { PDF } from "@/lib/db/models/pdf";
+import { serializePdf } from "@/lib/utils/serializePdf";
 
 export async function uploadPdfMetadata({
   pdfId,
@@ -44,4 +45,16 @@ export async function uploadPdfMetadata({
     console.error(error);
     return { success: false };
   }
+}
+
+export async function getAllPdfMetaData() {
+  const session = await auth();
+  if (!session) {
+    throw new Error("No session");
+  }
+  await connectToDatabase();
+
+  const userId = session.user._id;
+  const pdfList = await PDF.find({ userId }).lean();
+  return pdfList.map(serializePdf);
 }

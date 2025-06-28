@@ -1,53 +1,12 @@
-"use client"
+import { auth } from "@/lib/auth";
+import { getAllPdfMetaData } from "@/lib/actions";
+import HomeClient from "@/components/home/HomeClient";
 
-import {useSession} from "next-auth/react";
-import {useState, useEffect} from "react";
-import { IPDF } from "@/lib/db/models/pdf";
-import BookCard from "@/components/ui/bookCard";
-import PdfUploader from "@/components/PdfUploader";
+export default async function Home() {
+  const session = await auth();
+  const pdfList = await getAllPdfMetaData();
 
+  if (!session?.user) return <p>USER not authenticated</p>;
 
-export default function Home() {
-  const { data: session } = useSession()
-  const [pdfs, setPdfs] = useState<IPDF[]>([]);
-
-
-  const fetchPdfs = () => {
-    fetch("/api/pdfMetadata").then((res) => res.json()).then(setPdfs);
-  }
-
-  useEffect(() => {
-    fetchPdfs();
-  }, []);
-
-  if (!session?.user) return <p>User not authenticated</p>
-  return (
-    <section className="p-10 bg-base-200 rounded-box flex flex-col gap-10">
-      <div className="flex justify-between flex-wrap gap-3 items-center p-5 rounded-box">
-        <h1 className="text-3xl ">
-          Welcome{" "}
-          <span className="text-primary font-bold">{session.user.name}!</span>
-        </h1>
-        <PdfUploader onSuccessfulUploadAction={fetchPdfs} />
-      </div>
-      <div className="rounded-box">
-        <h2 className="text-2xl">
-          Pick where you <span className="text-primary">left:</span>
-        </h2>
-        <div className="flex mt-5 flex-wrap justify-center gap-5">
-          {pdfs.map((pdf) => {
-            return (
-              <BookCard
-                key={pdf._id}
-                bookName={pdf.title}
-                author={pdf.author}
-                coverPicture={pdf.cover}
-                progress={pdf.progress ?? 1}
-              />
-            );
-          })}
-        </div>
-      </div>
-    </section>
-  );
+  return <HomeClient session={session} initialPdfs={pdfList} />;
 }
