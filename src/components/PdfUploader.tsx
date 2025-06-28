@@ -35,16 +35,17 @@ export default function PdfUploader() {
         body: formData,
       },
     ).then((res) => res.json());
-    console.log(uploadResponse);
     await uploadPdfMetadata({
       pdfId: uploadResponse.public_id,
       folder,
       title: "The chronicales of owl",
       description: "The owl",
       author: "The owl",
-      cover: "http://localhost:3000/_next/image?url=%2Flogo.png&w=256&q=75",
+      cover:
+        "https://s2982.pcdn.co/wp-content/uploads/2018/06/the-barn-owls-by-tony-johnston-book-cover.jpg.optimal.jpg",
     });
-    console.log(uploadResponse);
+   
+    setSuccess(true);
     try {
     } catch (error) {
       console.error(error);
