@@ -1,6 +1,6 @@
 "use server";
 
-import { IPDF, PDF } from "@/lib/db/models/pdf";
+import { PDF } from "@/lib/db/models/pdf";
 import { auth } from "@/lib/auth";
 import connectToDatabase from "@/lib/db/connection";
 
@@ -44,14 +44,4 @@ export async function uploadPdfMetadata({
     console.error(error);
     return { success: false };
   }
-}
-
-export async function getAllPdfMetadata(): Promise<IPDF[]> {
-  const session = await auth();
-  if (!session) throw new Error("Not logged in");
-
-  await connectToDatabase();
-
-  const userId = session.user._id;
-  return PDF.find({ userId: userId });
 }

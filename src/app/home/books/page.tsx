@@ -9,7 +9,7 @@ export default function Books() {
         <h1 className="text-3xl ">
           Your <span className="text-primary font-bold">Books:</span>
         </h1>
-        <PdfUploader />
+        {/*<PdfUploader />*/}
       </div>
       <div className="rounded-box">
         <label className="input w-[min(90%,40em)] flex mx-auto">
