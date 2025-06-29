@@ -38,11 +38,11 @@ export default function HomeClient({
           {pdfs.map((pdf) => {
             return (
               <BookCard
-                key={pdf._id}
-                bookName={pdf.title}
-                author={pdf.author}
-                coverPicture={pdf.cover}
-                progress={pdf.progress ?? 1}
+                key={pdf?._id}
+                bookName={pdf?.title}
+                author={pdf?.author}
+                coverPicture={pdf?.cover}
+                progress={pdf?.progress ?? 1}
               />
             );
           })}

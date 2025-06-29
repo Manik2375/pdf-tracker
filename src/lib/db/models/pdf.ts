@@ -1,6 +1,6 @@
-import mongoose, { Schema, Document, Model } from "mongoose";
+import mongoose, { Schema, Model } from "mongoose";
 
-export interface IPDF extends Document {
+export interface IPDF {
   _id: string;
   title: string;
   description: string;
