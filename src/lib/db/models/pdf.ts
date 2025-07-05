@@ -2,6 +2,7 @@ import mongoose, { Schema, Model } from "mongoose";
 
 export interface IPDF {
   _id: string;
+  cloudinaryPublicId: string;
   title: string;
   description: string;
   author: string;
@@ -15,7 +16,15 @@ export interface IPDF {
 
 export const pdfSchema = new Schema<IPDF>(
   {
-    _id: String,
+    _id: {
+      type: String,
+      required: true,
+    },
+
+    cloudinaryPublicId: {
+      type: String,
+      required: true,
+    },
     title: {
       type: String,
       required: [true, "Please enter a valid title"],
@@ -36,7 +45,7 @@ export const pdfSchema = new Schema<IPDF>(
       type: String,
       required: true,
     },
-    progress:{
+    progress: {
       type: Number,
       required: true,
     },
@@ -46,7 +55,7 @@ export const pdfSchema = new Schema<IPDF>(
       required: true,
     },
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 export const PDF: Model<IPDF> =

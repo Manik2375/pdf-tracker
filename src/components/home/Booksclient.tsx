@@ -16,6 +16,7 @@ export default function BooksClient({
   const [pdfs, setPdfs] = useState<IPDF[]>(initialPdfs);
   const [searchQuery, setSearchQuery] = useState<string>("");
 
+
   const fetchPdfs = useCallback(() => {
     fetch("/api/pdfMetadata")
       .then((res) => res.json())
@@ -92,12 +93,13 @@ export default function BooksClient({
               return (
                 <BookListItem
                   key={pdf?._id}
-                  pdfId={pdf?._id}
-                  bookName={pdf?.title}
+                  pdfId={pdf._id}
+                  cloudinaryPublicId={pdf.cloudinaryPublicId}
+                  bookName={pdf.title}
                   description={pdf.description}
-                  author={pdf?.author}
+                  author={pdf.author}
                   coverPicture={pdf?.cover}
-                  progress={pdf?.progress ?? 1}
+                  progress={pdf.progress ?? 1}
                 />
               );
             })}

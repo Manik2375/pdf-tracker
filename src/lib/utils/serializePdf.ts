@@ -4,6 +4,7 @@ import { IPDF } from "@/lib/db/models/pdf";
 export function serializePdf(pdf: FlattenMaps<IPDF>) {
   return {
     _id: pdf._id.toString(),
+    cloudinaryPublicId: pdf.cloudinaryPublicId,
     title: pdf.title,
     description: pdf.description,
     author: pdf.author,

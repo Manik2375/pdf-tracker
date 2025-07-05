@@ -26,20 +26,20 @@ export async function uploadPdfMetadata({
 
   if (!session?.user) return null;
 
-  console.log(session.user);
-  const pdfDocument = await PDF.create({
-    _id: pdfId.split("/")[1].split(".")[0],
-    folder,
-    title,
-    description,
-    author,
-    progress: 1,
-    userId: session.user._id,
-    cover,
-  });
-
+  console.log(pdfId);
   try {
-    await pdfDocument.save();
+     await PDF.create({
+      _id: pdfId.split("/")[1].split(".")[0],
+      cloudinaryPublicId: pdfId,
+      folder,
+      title,
+      description,
+      author,
+      progress: 1,
+      userId: session.user._id,
+      cover,
+    });
+
     return { success: true };
   } catch (error) {
     console.error(error);
@@ -57,4 +57,28 @@ export async function getAllPdfMetaData() {
   const userId = session.user._id;
   const pdfList = await PDF.find({ userId }).lean();
   return pdfList.map(serializePdf);
+}
+
+export async function deletePdfMetaData(pdfId: string) {
+  try {
+    const session = await auth();
+    if (!session) {
+      throw new Error("No session");
+    }
+    await connectToDatabase();
+
+    const deletedPdf = await PDF.findOneAndDelete({
+      _id: pdfId,
+      userId: session.user._id,
+    });
+
+    console.log(deletedPdf);
+    return {
+      success: true,
+      message: "PDF metadata deleted successfully",
+    };
+  } catch (error) {
+    console.error("Error deleting PDF metadata ", error);
+    throw error;
+  }
 }

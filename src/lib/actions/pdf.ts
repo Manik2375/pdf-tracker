@@ -1,5 +1,6 @@
 "use server";
 import { v2 as cloudinary } from "cloudinary";
+import { deletePdfMetaData } from "./db";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -23,7 +24,7 @@ export async function generateUploadSignature(): Promise<{
       timestamp,
       folder,
     },
-    process.env.CLOUDINARY_API_SECRET!,
+    process.env.CLOUDINARY_API_SECRET!
   );
 
   return {
@@ -33,4 +34,26 @@ export async function generateUploadSignature(): Promise<{
     cloudName: process.env.CLOUDINARY_CLOUD_NAME!,
     apiKey: process.env.CLOUDINARY_API_KEY!,
   };
+}
+
+export async function deletePdf(pdfId: string, cloudinaryPublicId: string) {
+  try {
+    console.log(cloudinaryPublicId)
+    const result = await cloudinary.uploader.destroy(cloudinaryPublicId, {
+      resource_type: "raw",
+    });
+    const resultMetaData = await deletePdfMetaData(pdfId);
+    console.log(pdfId, result);
+    if (result.result === "ok" && resultMetaData.success) {
+      {
+        return {
+          success: true,
+          message: "PDF deleted successfully",
+        };
+      }
+    }
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
 }
