@@ -1,5 +1,6 @@
 "use client";
 import { useCallback, useState } from "react";
+import { debounce } from "@/lib/utils/debounce";
 import { IPDF } from "@/lib/db/models/pdf";
 import PdfUploader from "@/components/PdfUploader";
 import { Session } from "next-auth";
@@ -21,9 +22,12 @@ export default function BooksClient({
       .then(setPdfs);
   }, []);
 
-  const handleSearch = (query: string) => {
+  const handleSearch = useCallback((query: string) => {
+    const debouncedSearch = debounce((query: string) => {
       setSearchQuery(query.toLowerCase().trim());
-  };
+    }, 300);
+    debouncedSearch(query);
+  }, []);
 
   if (!session?.user) return <p>Loading</p>;
   return (
