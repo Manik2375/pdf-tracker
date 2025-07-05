@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { IPDF } from "@/lib/db/models/pdf";
 import BookCard from "@/components/ui/bookCard";
 import PdfUploader from "@/components/PdfUploader";
@@ -14,11 +14,11 @@ export default function HomeClient({
 }) {
   const [pdfs, setPdfs] = useState<IPDF[]>(initialPdfs);
 
-  const fetchPdfs = () => {
+  const fetchPdfs = useCallback(() => {
     fetch("/api/pdfMetadata")
       .then((res) => res.json())
       .then(setPdfs);
-  };
+  }, []);
 
   if (!session?.user) return <p>Loading</p>;
   return (

@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { IPDF } from "@/lib/db/models/pdf";
 import PdfUploader from "@/components/PdfUploader";
 import { Session } from "next-auth";
@@ -13,11 +13,16 @@ export default function BooksClient({
   initialPdfs: IPDF[];
 }) {
   const [pdfs, setPdfs] = useState<IPDF[]>(initialPdfs);
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
-  const fetchPdfs = () => {
+  const fetchPdfs = useCallback(() => {
     fetch("/api/pdfMetadata")
       .then((res) => res.json())
       .then(setPdfs);
+  }, []);
+
+  const handleSearch = (query: string) => {
+      setSearchQuery(query.toLowerCase().trim());
   };
 
   if (!session?.user) return <p>Loading</p>;
@@ -52,29 +57,46 @@ export default function BooksClient({
             required
             placeholder="Search"
             className="w-full"
+            defaultValue={searchQuery}
+            onChange={(e) => {
+              handleSearch(e.currentTarget.value);
+            }}
           />
         </label>
-        <ul className="flex flex-col justify-center mt-10">
-          <li className="p-3 gap-3 grid grid-cols-[max-content_1fr_1fr_2fr_max-content] border-neutral border-b">
+        <ul className="gap-5 flex flex-wrap md:flex-col justify-center mt-10">
+          <li className="hidden md:grid p-3 gap-3 grid-cols-[max-content_1fr_1fr_2fr_max-content] border-neutral">
             <div className="w-[100]"></div>
             <p>Book Name</p>
             <p>Author</p>
             <p>Description</p>
             <div className="w-[50]"></div>
           </li>
-          {pdfs.map((pdf) => {
-            return (
-              <BookListItem
-                key={pdf?._id}
-                pdfId={pdf?._id}
-                bookName={pdf?.title}
-                description={pdf.description}
-                author={pdf?.author}
-                coverPicture={pdf?.cover}
-                progress={pdf?.progress ?? 1}
-              />
-            );
-          })}
+          {pdfs
+            .map((pdf) => {
+              const name = pdf.title.toLowerCase();
+              let score = 0;
+
+              if (name === searchQuery) score = 3;
+              else if (name.startsWith(searchQuery)) score = 2;
+              else if (name.includes(searchQuery)) score = 1;
+
+              return { pdf, score };
+            })
+            .filter((pdf) => pdf.score > 0)
+            .sort((a, b) => b.score - a.score)
+            .map(({ pdf }) => {
+              return (
+                <BookListItem
+                  key={pdf?._id}
+                  pdfId={pdf?._id}
+                  bookName={pdf?.title}
+                  description={pdf.description}
+                  author={pdf?.author}
+                  coverPicture={pdf?.cover}
+                  progress={pdf?.progress ?? 1}
+                />
+              );
+            })}
         </ul>
       </div>
     </section>

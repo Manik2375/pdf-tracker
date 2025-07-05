@@ -18,7 +18,7 @@ export default function BookListItem({
   progress: number;
 }) {
   return (
-    <li className="relative grid grid-cols-[max-content_1fr_1fr_2fr_max-content] items-center gap-3 p-3 border-neutral border-b cursor-pointer hover:bg-base-300 active:scale-[0.99] has-[button:active]:scale-100 last:[&>.dropdown]:dropdown-top">
+    <li className="relative grid p-5 flex-1 min-w-2/4 md:grid-cols-[max-content_1fr_1fr_2fr_max-content] items-center gap-3 md:p-3 border-neutral border rounded-box md:border-b cursor-pointer hover:bg-base-300 active:scale-[0.99] has-[button:active]:scale-100 last:[&>.dropdown]:dropdown-top">
       <div
         className="radial-progress mx-4 text-primary"
         style={
@@ -39,22 +39,22 @@ export default function BookListItem({
           className="rounded-full aspect-square object-cover"
         />
       </div>
-      <p className="tooltip" data-tip={bookName}>
-        <span className=" block text-primary text-nowrap overflow-ellipsis overflow-x-hidden max-w-[8em]">
+      <p className="tooltip " data-tip={bookName}>
+        <span className=" block text-primary text-nowrap overflow-ellipsis overflow-x-hidden w-max max-w-[12em] md:max-w-[8em]">
           {bookName}
         </span>
       </p>
-      <p className="tooltip text-neutral font-light" data-tip={author}>
+      <p className="tooltip text-neutral font-light w-max" data-tip={author}>
         <span>{author}</span>
       </p>
       <p
-        className="tooltip text-base-content font-light"
+        className="tooltip text-base-content font-light w-max"
         data-tip={description}
       >
         <span>{description}</span>
       </p>
       <button
-        className="btn btn-soft btn-neutral"
+        className="btn btn-soft btn-neutral ml-auto md:ml-0"
         popoverTarget={`popover-${pdfId}`}
         style={{ anchorName: `--anchor-${pdfId}` } as React.CSSProperties}
       >
