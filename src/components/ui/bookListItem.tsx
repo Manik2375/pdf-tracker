@@ -24,10 +24,13 @@ export default function BookListItem({
 
   const handleDelete = useCallback(async () => {
     try {
-      setLoading(true)
-      console.log(cloudinaryPublicId)
+      setLoading(true);
+      console.log(cloudinaryPublicId);
       const result = await deletePdf(pdfId, cloudinaryPublicId);
-      if (result?.success == true) alert("PDF deleted successfully");
+      if (result?.success == true) {
+        alert("PDF deleted successfully");
+        deleteRef.current?.close();
+      }
     } catch (e) {
       console.error("Error deleting PDF ", e);
     } finally {
