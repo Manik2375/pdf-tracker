@@ -1,7 +1,7 @@
 "use client";
 import { useCallback, useState } from "react";
 import { debounce } from "@/lib/utils/debounce";
-import { IPDF } from "@/lib/db/models/pdf";
+import { SerializedIPDF } from "@/lib/db/models/pdf";
 import { PdfUploader } from "@/components/pdf";
 import { Session } from "next-auth";
 import BookListItem from "@/components/ui/bookListItem";
@@ -11,11 +11,10 @@ export default function BooksClient({
   initialPdfs,
 }: {
   session: Session;
-  initialPdfs: IPDF[];
+  initialPdfs: SerializedIPDF[];
 }) {
-  const [pdfs, setPdfs] = useState<IPDF[]>(initialPdfs);
+  const [pdfs, setPdfs] = useState<SerializedIPDF[]>(initialPdfs);
   const [searchQuery, setSearchQuery] = useState<string>("");
-
 
   const fetchPdfs = useCallback(() => {
     fetch("/api/pdfMetadata")

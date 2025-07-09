@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useState } from "react";
-import { IPDF } from "@/lib/db/models/pdf";
+import { SerializedIPDF } from "@/lib/db/models/pdf";
 import BookCard from "@/components/ui/bookCard";
 import { PdfUploader } from "@/components/pdf";
 import { Session } from "next-auth";
@@ -10,9 +10,9 @@ export default function HomeClient({
   initialPdfs,
 }: {
   session: Session;
-  initialPdfs: IPDF[];
+  initialPdfs: SerializedIPDF[];
 }) {
-  const [pdfs, setPdfs] = useState<IPDF[]>(initialPdfs);
+  const [pdfs, setPdfs] = useState<SerializedIPDF[]>(initialPdfs);
 
   const fetchPdfs = useCallback(() => {
     fetch("/api/pdfMetadata")

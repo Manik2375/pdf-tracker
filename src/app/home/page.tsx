@@ -8,6 +8,5 @@ export default async function Home() {
 
   if (!session?.user) return <p>USER not authenticated</p>;
 
-  // @ts-ignore
   return <HomeClient session={session} initialPdfs={pdfList} />;
 }
