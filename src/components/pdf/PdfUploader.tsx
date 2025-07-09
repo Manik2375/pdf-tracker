@@ -3,9 +3,11 @@
 import React, { useState, useRef } from "react";
 import { generateUploadSignature, uploadPdfMetadata } from "@/lib/actions";
 
-export default function PdfUploader(
-  {onSuccessfulUploadAction} :{onSuccessfulUploadAction: () => void}
-) {
+export function PdfUploader({
+  onSuccessfulUploadAction,
+}: {
+  onSuccessfulUploadAction: () => void;
+}) {
   const modalRef = useRef<HTMLDialogElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -46,7 +48,7 @@ export default function PdfUploader(
         "https://s2982.pcdn.co/wp-content/uploads/2018/06/the-barn-owls-by-tony-johnston-book-cover.jpg.optimal.jpg",
     });
 
-    onSuccessfulUploadAction()
+    onSuccessfulUploadAction();
     setSuccess(true);
     try {
     } catch (error) {

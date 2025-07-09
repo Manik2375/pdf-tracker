@@ -2,7 +2,7 @@
 import { useCallback, useState } from "react";
 import { IPDF } from "@/lib/db/models/pdf";
 import BookCard from "@/components/ui/bookCard";
-import PdfUploader from "@/components/PdfUploader";
+import { PdfUploader } from "@/components/pdf";
 import { Session } from "next-auth";
 
 export default function HomeClient({
@@ -39,6 +39,7 @@ export default function HomeClient({
             return (
               <BookCard
                 key={pdf?._id}
+                pdfId={pdf._id}
                 bookName={pdf?.title}
                 author={pdf?.author}
                 coverPicture={pdf?.cover}

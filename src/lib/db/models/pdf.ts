@@ -14,6 +14,20 @@ export interface IPDF {
   updatedAt: Date;
 }
 
+export interface SerializedIPDF {
+  _id: string;
+  cloudinaryPublicId: string;
+  title: string;
+  description: string;
+  author: string;
+  folder: string | null;
+  cover: string | null;
+  progress: number;
+  userId?: string;
+  createdAt: string | null;
+  updatedAt: string | null;
+}
+
 export const pdfSchema = new Schema<IPDF>(
   {
     _id: {
@@ -55,7 +69,7 @@ export const pdfSchema = new Schema<IPDF>(
       required: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export const PDF: Model<IPDF> =

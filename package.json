@@ -16,8 +16,10 @@
     "mongoose": "^8.15.2",
     "next": "15.3.3",
     "next-auth": "^5.0.0-beta.28",
+    "pdfjs-dist": "^5.3.31",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-pdf": "^10.0.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

@@ -1,13 +1,16 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export default function BookCard({
+  pdfId,
   bookName,
   author,
   coverPicture,
   progress,
 }: {
+  pdfId: string;
   bookName: string;
-  author: string,
+  author: string;
   coverPicture: string;
   progress: number;
 }) {
@@ -22,7 +25,7 @@ export default function BookCard({
           className="w-full scale-105"
         />
       </figure>
-       <div className="card-body pt-2 h-[16em]">
+      <div className="card-body pt-2 h-[16em]">
         <p className="text-secondary text-sm overflow-ellipsis wrap-anywhere">
           {author?.slice(0, 25)}
         </p>
@@ -30,7 +33,9 @@ export default function BookCard({
           {bookName.slice(0, 25) + "..."}
         </h2>
         <div className="card-actions justify-end">
-          <button className="btn btn-primary">Read</button>
+          <Link className="btn btn-primary" href={`/home/${pdfId}`}>
+            Read
+          </Link>
         </div>
         <progress
           className="progress progress-primary w-full absolute top-full left-0 translate-y-[-100%]"

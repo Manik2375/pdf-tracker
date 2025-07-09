@@ -2,7 +2,7 @@
 
 import { auth } from "@/lib/auth";
 import connectToDatabase from "@/lib/db/connection";
-import { PDF } from "@/lib/db/models/pdf";
+import { PDF, SerializedIPDF } from "@/lib/db/models/pdf";
 import { serializePdf } from "@/lib/utils/serializePdf";
 
 export async function uploadPdfMetadata({
@@ -28,7 +28,7 @@ export async function uploadPdfMetadata({
 
   console.log(pdfId);
   try {
-     await PDF.create({
+    await PDF.create({
       _id: pdfId.split("/")[1].split(".")[0],
       cloudinaryPublicId: pdfId,
       folder,
@@ -47,7 +47,7 @@ export async function uploadPdfMetadata({
   }
 }
 
-export async function getAllPdfMetaData() {
+export async function getAllPdfMetaData(): Promise<SerializedIPDF[]> {
   const session = await auth();
   if (!session) {
     throw new Error("No session");
@@ -57,6 +57,28 @@ export async function getAllPdfMetaData() {
   const userId = session.user._id;
   const pdfList = await PDF.find({ userId }).lean();
   return pdfList.map(serializePdf);
+}
+
+export async function getPdfMetaData(pdfId: string): Promise<SerializedIPDF> {
+  try {
+    const session = await auth();
+    if (!session) {
+      throw new Error("No session");
+    }
+    await connectToDatabase();
+    const pdf = await PDF.findOne({
+      _id: pdfId,
+      userId: session.user._id,
+    }).lean();
+
+    if (!pdf) {
+      throw new Error("No pdf found");
+    }
+    return serializePdf(pdf);
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
 }
 
 export async function deletePdfMetaData(pdfId: string) {

@@ -2,7 +2,7 @@
 import { useCallback, useState } from "react";
 import { debounce } from "@/lib/utils/debounce";
 import { IPDF } from "@/lib/db/models/pdf";
-import PdfUploader from "@/components/PdfUploader";
+import { PdfUploader } from "@/components/pdf";
 import { Session } from "next-auth";
 import BookListItem from "@/components/ui/bookListItem";
 
