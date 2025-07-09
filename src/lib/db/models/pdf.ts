@@ -21,7 +21,7 @@ export interface SerializedIPDF {
   description: string;
   author: string;
   folder: string | null;
-  cover: string | null;
+  cover: string;
   progress: number;
   userId?: string;
   createdAt: string | null;

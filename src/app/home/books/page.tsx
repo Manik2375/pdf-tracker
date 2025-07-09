@@ -7,6 +7,6 @@ export default async function Books() {
   const pdfList = await getAllPdfMetaData();
 
   if (!session?.user) return <p>USER not authenticated</p>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return <BooksClient session={session} initialPdfs={pdfList as any} />;
+
+  return <BooksClient session={session} initialPdfs={pdfList} />;
 }
