@@ -43,3 +43,5 @@ next-env.d.ts
 # jetbrains
 .idea
 qodana.yaml
+
+public/test.pdf
