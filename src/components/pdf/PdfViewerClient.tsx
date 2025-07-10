@@ -17,6 +17,8 @@ const DynamicPdfViewer = dynamic(async () => {
     const [outline, setOutline] = useState({});
     const pageRefs = useRef<HTMLDivElement[] | null>([]);
 
+    const containerRef = useRef<HTMLDivElement | null>(null);
+
     const changePageNumber = (pageNum: number) => {
       const page = pageRefs.current?.find((page) => {
         if (page.dataset.pagenumber) {
@@ -31,10 +33,24 @@ const DynamicPdfViewer = dynamic(async () => {
       const newPage = action === "prev" ? currentPage - 1 : currentPage + 1;
       changePageNumber(newPage);
     };
+
+    const handleFullScreen = () => {
+      const container = containerRef.current;
+      if (!container) return;
+
+      if (document.fullscreenElement) {
+        document.exitFullscreen();
+      } else {
+        container.requestFullscreen();
+      }
+    };
     return (
-      <div className="relative flex px-5 py-6 pt-0 space-y-6 bg-base-200 rounded-box">
+      <div
+        className="relative flex px-5 py-6 pt-0 space-y-6 bg-base-200 rounded-box"
+        ref={containerRef}
+      >
         <div className="mt-20 overflow-y-auto h-[80vh] w-full flex flex-col items-center">
-          <div className="absolute flex justify-between items-center top-0 left-0 right-0 p-5 rounded-t-box w-full bg-[#0000006b] backdrop-blur-xs z-10">
+          <div className="absolute flex justify-between items-center top-0 left-0 right-0 p-5 rounded-t-box w-full bg-[#0000004a] backdrop-blur-xs z-10">
             <p>Chronicles of owl</p>
             <div className="flex gap-2">
               <button
@@ -97,7 +113,10 @@ const DynamicPdfViewer = dynamic(async () => {
               </button>
             </div>
             <div>
-              <button className="btn text-neutral-content btn-ghost btn-neutral">
+              <button
+                className="btn text-neutral-content btn-ghost btn-neutral"
+                onClick={handleFullScreen}
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
