@@ -1,7 +1,7 @@
 import React, { useCallback, useRef, useState } from "react";
 import Image from "next/image";
 import { deletePdf } from "@/lib/actions";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function BookListItem({
   pdfId,
@@ -21,6 +21,7 @@ export default function BookListItem({
   progress: number;
 }) {
   const deleteRef = useRef<HTMLDialogElement | null>(null);
+  const router = useRouter();
   const [loading, setLoading] = useState<boolean>(false);
 
   const handleDelete = useCallback(async () => {
@@ -41,84 +42,85 @@ export default function BookListItem({
 
   return (
     <>
-      <li className="last-of-type:[&>.dropdown]:dropdown-top">
-        <Link
-          href={`/home/${pdfId}`}
-          className="relative grid p-5 flex-1 max-w-[20em] md:max-w-[initial] md:grid-cols-[max-content_1fr_1fr_2fr_max-content] items-center gap-3 md:p-3 border-neutral border rounded-box md:border-b cursor-pointer hover:bg-base-300 active:scale-[0.99] has-[button:active]:scale-100"
+      <li
+        onClick={() => {
+          router.push(`/home/${pdfId}`);
+        }}
+        className="last-of-type:[&>.dropdown]:dropdown-top relative grid p-5 flex-1 max-w-[20em] md:max-w-[initial] md:grid-cols-[max-content_1fr_1fr_2fr_max-content] items-center gap-3 md:p-3 border-neutral border rounded-box md:border-b cursor-pointer hover:bg-base-300 active:scale-[0.99] has-[button:active]:scale-100"
+      >
+        <div
+          className="radial-progress mx-4 text-primary"
+          style={
+            {
+              "--value": progress,
+              "--size": "4rem",
+              "--thickness": "0.25em",
+            } as React.CSSProperties
+          }
+          aria-valuenow={progress}
+          role="progressbar"
         >
-          <div
-            className="radial-progress mx-4 text-primary"
-            style={
-              {
-                "--value": progress,
-                "--size": "4rem",
-                "--thickness": "0.25em",
-              } as React.CSSProperties
-            }
-            aria-valuenow={progress}
-            role="progressbar"
-          >
-            <Image
-              src={coverPicture}
-              alt="Book cover"
-              width="50"
-              height="50"
-              className="rounded-full aspect-square object-cover"
-            />
-          </div>
-          <p className="tooltip " data-tip={bookName}>
-            <span className=" block text-primary text-nowrap overflow-ellipsis overflow-x-hidden w-max max-w-[12em] md:max-w-[8em]">
-              {bookName}
-            </span>
-          </p>
-          <p
-            className="tooltip text-neutral font-light w-max"
-            data-tip={author}
-          >
-            <span>{author}</span>
-          </p>
-          <p
-            className="tooltip text-base-content font-light w-max"
-            data-tip={description}
-          >
-            <span>{description}</span>
-          </p>
-          <button
-            className="btn btn-soft btn-neutral ml-auto md:ml-0"
-            popoverTarget={`popover-${pdfId}`}
-            style={{ anchorName: `--anchor-${pdfId}` } as React.CSSProperties}
-          >
-            Action
-          </button>
+          <Image
+            src={coverPicture}
+            alt="Book cover"
+            width="50"
+            height="50"
+            className="rounded-full aspect-square object-cover"
+          />
+        </div>
+        <p className="tooltip " data-tip={bookName}>
+          <span className=" block text-primary text-nowrap overflow-ellipsis overflow-x-hidden w-max max-w-[12em] md:max-w-[8em]">
+            {bookName}
+          </span>
+        </p>
+        <p className="tooltip text-neutral font-light w-max" data-tip={author}>
+          <span>{author}</span>
+        </p>
+        <p
+          className="tooltip text-base-content font-light w-max"
+          data-tip={description}
+        >
+          <span>{description}</span>
+        </p>
+        <button
+          className="btn btn-soft btn-neutral ml-auto md:ml-0"
+          popoverTarget={`popover-${pdfId}`}
+          style={{ anchorName: `--anchor-${pdfId}` } as React.CSSProperties}
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+        >
+          Action
+        </button>
 
-          <ul
-            className="dropdown dropdown-end  menu rounded-box w-32 bg-base-100 shadow-sm flex flex-col gap-3 py-3"
-            popover="auto"
-            id={`popover-${pdfId}`}
-            style={
-              { positionAnchor: `--anchor-${pdfId}` } as React.CSSProperties
-            }
-          >
-            <li>
-              <button
-                className="btn btn-neutral "
-                onClick={() => {
-                  alert("Under construction U_U");
-                }}
-              >
-                Edit
-              </button>{" "}
-            </li>
-            <li>
-              <button
-                className="btn btn-error"
-                onClick={() => deleteRef.current?.showModal()}
-              >
-                Delete
-              </button>{" "}
-            </li>
-          </ul>
-        </Link>
+        <ul
+          className="dropdown dropdown-end  menu rounded-box w-32 bg-base-100 shadow-sm flex flex-col gap-3 py-3"
+          popover="auto"
+          id={`popover-${pdfId}`}
+          style={{ positionAnchor: `--anchor-${pdfId}` } as React.CSSProperties}
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+        >
+          <li>
+            <button
+              className="btn btn-neutral "
+              onClick={() => {
+                alert("Under construction U_U");
+              }}
+            >
+              Edit
+            </button>{" "}
+          </li>
+          <li>
+            <button
+              className="btn btn-error"
+              onClick={() => deleteRef.current?.showModal()}
+            >
+              Delete
+            </button>{" "}
+          </li>
+        </ul>
       </li>
       <dialog ref={deleteRef} className="modal backdrop-blur-xs">
         <div className="modal-box">

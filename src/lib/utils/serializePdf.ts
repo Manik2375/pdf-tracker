@@ -1,7 +1,7 @@
 import { FlattenMaps } from "mongoose";
-import { IPDF } from "@/lib/db/models/pdf";
+import { IPDF, SerializedIPDF } from "@/lib/db/models/pdf";
 
-export function serializePdf(pdf: FlattenMaps<IPDF>) {
+export function serializePdf(pdf: FlattenMaps<IPDF>): SerializedIPDF {
   return {
     _id: pdf._id.toString(),
     cloudinaryPublicId: pdf.cloudinaryPublicId,
@@ -9,7 +9,7 @@ export function serializePdf(pdf: FlattenMaps<IPDF>) {
     description: pdf.description,
     author: pdf.author,
     folder: pdf.folder?.toString() ?? null,
-    cover: pdf.cover ? pdf.cover.toString() : null,
+    cover: pdf.cover.toString(),
     progress: pdf.progress ?? 1,
     userId: pdf.userId?.toString(),
     createdAt: pdf.createdAt?.toISOString?.() ?? null,
