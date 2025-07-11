@@ -1,7 +1,7 @@
 "use client";
 import dynamic from "next/dynamic";
 import "react-pdf/dist/Page/TextLayer.css";
-import { ComponentType, useRef, useState } from "react";
+import { ComponentType, useEffect, useRef, useState } from "react";
 
 interface PdfViewerClientProps {
   pdfLink: string;
@@ -14,6 +14,7 @@ const DynamicPdfViewer = dynamic(async () => {
   const PdfComponent: ComponentType<PdfViewerClientProps> = ({ pdfLink }) => {
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [numPages, setNumPages] = useState<number>(0);
+    const [fullscreen, setFullscreen] = useState<boolean>(false);
     const [outline, setOutline] = useState({});
     const pageRefs = useRef<HTMLDivElement[] | null>([]);
 
@@ -34,23 +35,43 @@ const DynamicPdfViewer = dynamic(async () => {
       changePageNumber(newPage);
     };
 
+    useEffect(() => {
+      const handleFullscreenChange = () => {
+        setFullscreen(!!document.fullscreenElement);
+      };
+      document.addEventListener("fullscreenchange", handleFullscreenChange);
+
+      return () => {
+        document.removeEventListener(
+          "fullscreenchange",
+          handleFullscreenChange,
+        );
+      };
+    }, []);
+
     const handleFullScreen = () => {
       const container = containerRef.current;
       if (!container) return;
 
       if (document.fullscreenElement) {
         document.exitFullscreen();
+        setFullscreen(false);
       } else {
         container.requestFullscreen();
+        setFullscreen(true);
       }
     };
     return (
       <div
-        className="relative flex px-5 py-6 pt-0 space-y-6 bg-base-200 rounded-box"
+        className={`${fullscreen ? "" : "px-5 rounded-box"} relative flex py-6 pt-0 space-y-6 bg-base-200`}
         ref={containerRef}
       >
-        <div className="mt-20 overflow-y-auto h-[80vh] w-full flex flex-col items-center">
-          <div className="absolute flex justify-between items-center top-0 left-0 right-0 p-5 rounded-t-box w-full bg-[#0000004a] backdrop-blur-xs z-10">
+        <div
+          className={`overflow-y-auto w-full flex flex-col items-center ${fullscreen ? "h-full" : " mt-20"}`}
+        >
+          <div
+            className={`${fullscreen ? "sticky" : "absolute rounded-t-box"} flex justify-between items-center top-0 left-0 right-0 p-5 w-full bg-[#0000004a] backdrop-blur-xs z-10`}
+          >
             <p>Chronicles of owl</p>
             <div className="flex gap-2">
               <button
