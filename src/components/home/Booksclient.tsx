@@ -99,6 +99,7 @@ export default function BooksClient({
                   author={pdf.author}
                   coverPicture={pdf?.cover}
                   progress={pdf.progress ?? 1}
+                  totalPages={pdf.totalPages}
                 />
               );
             })}

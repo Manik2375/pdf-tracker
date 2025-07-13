@@ -43,7 +43,8 @@ export default function HomeClient({
                 bookName={pdf?.title}
                 author={pdf?.author}
                 coverPicture={pdf?.cover}
-                progress={pdf?.progress ?? 1}
+                progress={pdf?.progress}
+                totalPages={pdf?.totalPages}
               />
             );
           })}
