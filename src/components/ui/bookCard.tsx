@@ -7,12 +7,14 @@ export default function BookCard({
   author,
   coverPicture,
   progress,
+  totalPages,
 }: {
   pdfId: string;
   bookName: string;
   author: string;
   coverPicture: string;
   progress: number;
+  totalPages: number;
 }) {
   return (
     <div className="relative card min-w-[12em] max-w-[14em] flex-1 bg-base-100 shadow-sm rounded-box overflow-hidden aspect-[1/1.5]">
@@ -40,7 +42,7 @@ export default function BookCard({
         <progress
           className="progress progress-primary w-full absolute top-full left-0 translate-y-[-100%]"
           value={progress}
-          max="100"
+          max={totalPages}
         ></progress>
       </div>
     </div>

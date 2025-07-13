@@ -11,6 +11,7 @@ export default function BookListItem({
   description,
   coverPicture,
   progress,
+  totalPages,
 }: {
   pdfId: string;
   cloudinaryPublicId: string;
@@ -19,6 +20,7 @@ export default function BookListItem({
   description: string;
   coverPicture: string;
   progress: number;
+  totalPages: number;
 }) {
   const deleteRef = useRef<HTMLDialogElement | null>(null);
   const router = useRouter();
@@ -52,12 +54,12 @@ export default function BookListItem({
           className="radial-progress mx-4 text-primary"
           style={
             {
-              "--value": progress,
+              "--value": (progress / totalPages) * 100,
               "--size": "4rem",
               "--thickness": "0.25em",
             } as React.CSSProperties
           }
-          aria-valuenow={progress}
+          aria-valuenow={(progress / totalPages) * 100}
           role="progressbar"
         >
           <Image
