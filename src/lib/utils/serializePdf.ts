@@ -11,6 +11,7 @@ export function serializePdf(pdf: FlattenMaps<IPDF>): SerializedIPDF {
     folder: pdf.folder?.toString() ?? null,
     cover: pdf.cover.toString(),
     progress: pdf.progress ?? 1,
+    totalPages: pdf.totalPages ?? 100,
     userId: pdf.userId?.toString(),
     createdAt: pdf.createdAt?.toISOString?.() ?? null,
     updatedAt: pdf.updatedAt?.toISOString?.() ?? null,

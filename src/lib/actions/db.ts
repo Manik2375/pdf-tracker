@@ -10,6 +10,7 @@ export async function uploadPdfMetadata({
   folder,
   title,
   description,
+  totalPages,
   author,
   cover,
 }: {
@@ -17,6 +18,7 @@ export async function uploadPdfMetadata({
   folder: string;
   title: string;
   description: string;
+  totalPages: number;
   author: string;
   cover: string;
 }) {
@@ -35,6 +37,7 @@ export async function uploadPdfMetadata({
       title,
       description,
       author,
+      totalPages,
       progress: 1,
       userId: session.user._id,
       cover,
