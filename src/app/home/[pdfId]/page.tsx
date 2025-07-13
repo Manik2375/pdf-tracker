@@ -24,5 +24,5 @@ export default function PDFViewer({
     return <p>No PDF found.</p>;
   }
 
-  return <PdfViewerClient pdfLink={pdfLink} />;
+  return <PdfViewerClient pdfLink={pdfLink} pdfDoc={pdfData} />;
 }

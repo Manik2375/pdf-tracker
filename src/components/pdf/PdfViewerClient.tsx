@@ -1,25 +1,55 @@
 "use client";
 import dynamic from "next/dynamic";
 import "react-pdf/dist/Page/TextLayer.css";
-import { ComponentType, useEffect, useRef, useState } from "react";
+import { ComponentType, useCallback, useEffect, useRef, useState } from "react";
+import { SerializedIPDF } from "@/lib/db/models/pdf";
 
 interface PdfViewerClientProps {
   pdfLink: string;
+  pdfDoc: SerializedIPDF;
 }
 
 const DynamicPdfViewer = dynamic(async () => {
   const { Document, Page, pdfjs } = await import("react-pdf");
   pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.mjs";
 
-  const PdfComponent: ComponentType<PdfViewerClientProps> = ({ pdfLink }) => {
-    const [currentPage, setCurrentPage] = useState<number>(1);
-    const [numPages, setNumPages] = useState<number>(0);
+  const PdfComponent: ComponentType<PdfViewerClientProps> = ({
+    pdfLink,
+    pdfDoc,
+  }) => {
+    const [currentPage, setCurrentPage] = useState<number>(pdfDoc.progress);
     const [scale, setScale] = useState<number>(1.0);
     const [fullscreen, setFullscreen] = useState<boolean>(false);
     const [outline, setOutline] = useState({});
     const pageRefs = useRef<HTMLDivElement[] | null>([]);
 
+    const observerRef = useRef<IntersectionObserver | null>(null);
     const containerRef = useRef<HTMLDivElement | null>(null);
+    const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+
+    const numPages = pdfDoc.totalPages;
+
+    useEffect(() => {
+      observerRef.current = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const target = entry.target as HTMLElement;
+              const pageNumber = target.dataset.pagenumber || 1;
+              console.log("test");
+              setCurrentPage(+pageNumber);
+            }
+          });
+        },
+        {
+          root: null,
+          threshold: 0.1,
+        },
+      );
+      return () => {
+        observerRef.current?.disconnect();
+      };
+    }, []);
 
     useEffect(() => {
       const handleFullscreenChange = () => {
@@ -72,7 +102,6 @@ const DynamicPdfViewer = dynamic(async () => {
       changePageNumber(newPage);
     };
 
-
     const handleFullScreen = () => {
       const container = containerRef.current;
       if (!container) return;
@@ -92,6 +121,7 @@ const DynamicPdfViewer = dynamic(async () => {
       >
         <div
           className={`overflow-y-auto w-full flex flex-col items-center ${fullscreen ? "h-full" : " mt-20 h-[85vh]"}`}
+          ref={scrollContainerRef}
         >
           <div
             className={`${fullscreen ? "sticky" : "absolute rounded-t-box"} flex justify-between items-center top-0 left-0 right-0 p-5 w-full bg-[#0000004a] backdrop-blur-xs z-10`}
@@ -231,9 +261,7 @@ const DynamicPdfViewer = dynamic(async () => {
           <Document
             file={"/test.pdf"}
             onLoadSuccess={async (pdf) => {
-              console.log(pdf.numPages);
-              setNumPages(pdf.numPages);
-              pageRefs.current = Array(pdf.numPages).fill(null);
+              pageRefs.current = Array(numPages).fill(null);
 
               const out = await pdf.getOutline();
               setOutline(out);
@@ -245,7 +273,10 @@ const DynamicPdfViewer = dynamic(async () => {
                   key={i}
                   data-pagenumber={i + 1}
                   ref={(el) => {
-                    if (pageRefs.current && el) pageRefs.current[i] = el;
+                    if (pageRefs.current && el) {
+                      pageRefs.current[i] = el;
+                      observerRef.current?.observe(el);
+                    }
                   }}
                   style={{
                     minHeight: `calc(80vh * ${scale})`,
@@ -270,6 +301,6 @@ const DynamicPdfViewer = dynamic(async () => {
   return PdfComponent;
 });
 
-export function PdfViewerClient({ pdfLink }: PdfViewerClientProps) {
-  return <DynamicPdfViewer pdfLink={pdfLink} />;
+export function PdfViewerClient({ pdfLink, pdfDoc }: PdfViewerClientProps) {
+  return <DynamicPdfViewer pdfLink={pdfLink} pdfDoc={pdfDoc} />;
 }
