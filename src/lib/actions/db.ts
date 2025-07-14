@@ -107,3 +107,32 @@ export async function deletePdfMetaData(pdfId: string) {
     throw error;
   }
 }
+
+export async function updatePdfProgress(pdfId: string, progress: number) {
+  try {
+    const session = await auth();
+    if (!session) {
+      throw new Error("No session");
+    }
+    await connectToDatabase();
+    const pdf = await PDF.findOneAndUpdate(
+      {
+        _id: pdfId,
+        userId: session.user._id,
+      },
+      {
+        progress: progress,
+      },
+    );
+    if (!pdf) {
+      throw new Error("No pdf found");
+    }
+    return {
+      success: true,
+      message: "PDF metadata updated successfully",
+      progress: progress,
+    };
+  } catch (e) {
+    console.error(e);
+  }
+}

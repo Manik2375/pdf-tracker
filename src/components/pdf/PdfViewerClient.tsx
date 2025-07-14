@@ -1,8 +1,9 @@
 "use client";
 import dynamic from "next/dynamic";
 import "react-pdf/dist/Page/TextLayer.css";
-import { ComponentType, useCallback, useEffect, useRef, useState } from "react";
+import { ComponentType, useEffect, useRef, useState } from "react";
 import { SerializedIPDF } from "@/lib/db/models/pdf";
+import { updatePdfProgress } from "@/lib/actions";
 
 interface PdfViewerClientProps {
   pdfLink: string;
@@ -22,21 +23,25 @@ const DynamicPdfViewer = dynamic(async () => {
     const [fullscreen, setFullscreen] = useState<boolean>(false);
     const [outline, setOutline] = useState({});
     const pageRefs = useRef<HTMLDivElement[] | null>([]);
+    const [allPagesLoaded, setAllPagesLoaded] = useState<boolean>(false);
 
+    const containerRef = useRef<HTMLDivElement>(null);
     const observerRef = useRef<IntersectionObserver | null>(null);
-    const containerRef = useRef<HTMLDivElement | null>(null);
-    const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 
     const numPages = pdfDoc.totalPages;
 
     useEffect(() => {
       observerRef.current = new IntersectionObserver(
         (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
+          entries.forEach(async (entry) => {
+            if (entry.isIntersecting && allPagesLoaded) {
               const target = entry.target as HTMLElement;
-              const pageNumber = target.dataset.pagenumber || 1;
-              console.log("test");
+              const pageNumber = Number(target.dataset.pagenumber || 1);
+              try {
+                await updatePdfProgress(pdfDoc._id, pageNumber);
+              } catch (error) {
+                console.error(error);
+              }
               setCurrentPage(+pageNumber);
             }
           });
@@ -49,7 +54,19 @@ const DynamicPdfViewer = dynamic(async () => {
       return () => {
         observerRef.current?.disconnect();
       };
-    }, []);
+    }, [allPagesLoaded, numPages]);
+
+    useEffect(() => {
+      if (allPagesLoaded && pageRefs.current) {
+        const targetpage = pageRefs.current[currentPage - 1];
+
+        if (targetpage) {
+          targetpage.scrollIntoView({ behavior: "smooth" });
+        }
+      }
+      console.log(pageRefs.current?.length);
+      setAllPagesLoaded(pageRefs.current?.length === numPages);
+    }, [allPagesLoaded, pageRefs.current]);
 
     useEffect(() => {
       const handleFullscreenChange = () => {
@@ -114,14 +131,14 @@ const DynamicPdfViewer = dynamic(async () => {
         setFullscreen(true);
       }
     };
+
     return (
       <div
         className={`${fullscreen ? "" : "px-5 py-6 rounded-box"} relative flex  pt-0 space-y-6 bg-base-200`}
-        ref={containerRef}
       >
         <div
           className={`overflow-y-auto w-full flex flex-col items-center ${fullscreen ? "h-full" : " mt-20 h-[85vh]"}`}
-          ref={scrollContainerRef}
+          ref={containerRef}
         >
           <div
             className={`${fullscreen ? "sticky" : "absolute rounded-t-box"} flex justify-between items-center top-0 left-0 right-0 p-5 w-full bg-[#0000004a] backdrop-blur-xs z-10`}

@@ -184,7 +184,7 @@ const DynamicPdfUploader = dynamic(
                 </svg>
                 <span>
                   Note: You are responsible for ensuring the uploaded PDF is for
-                  personal use only. We do not store or share your files.
+                  personal use only. We do not share your file.
                 </span>
               </div>
               <div className="modal-action">
