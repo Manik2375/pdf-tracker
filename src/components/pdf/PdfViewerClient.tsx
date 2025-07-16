@@ -307,7 +307,7 @@ const DynamicPdfViewer = dynamic(async () => {
                     }
                   }}
                   style={{
-                    minHeight: `calc(80vh * ${scale})`,
+                    minHeight: `90vh`,
                     width: "100%",
                   }}
                 >
