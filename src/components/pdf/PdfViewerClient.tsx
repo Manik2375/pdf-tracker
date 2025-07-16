@@ -24,6 +24,7 @@ const DynamicPdfViewer = dynamic(async () => {
     const [outline, setOutline] = useState({});
     const pageRefs = useRef<HTMLDivElement[] | null>([]);
     const [allPagesLoaded, setAllPagesLoaded] = useState<boolean>(false);
+    const [stopObserver, setStopObserver] = useState<boolean>(false);
 
     const containerRef = useRef<HTMLDivElement>(null);
     const observerRef = useRef<IntersectionObserver | null>(null);
@@ -33,22 +34,23 @@ const DynamicPdfViewer = dynamic(async () => {
     useEffect(() => {
       observerRef.current = new IntersectionObserver(
         (entries) => {
+          if (stopObserver) return;
           entries.forEach(async (entry) => {
             if (entry.isIntersecting && allPagesLoaded) {
               const target = entry.target as HTMLElement;
               const pageNumber = Number(target.dataset.pagenumber || 1);
+              setCurrentPage(+pageNumber);
               try {
                 await updatePdfProgress(pdfDoc._id, pageNumber);
               } catch (error) {
                 console.error(error);
               }
-              setCurrentPage(+pageNumber);
             }
           });
         },
         {
           root: null,
-          threshold: 0.1,
+          threshold: 0.5,
         },
       );
       return () => {
@@ -61,16 +63,16 @@ const DynamicPdfViewer = dynamic(async () => {
         const targetpage = pageRefs.current[currentPage - 1];
 
         if (targetpage) {
-          targetpage.scrollIntoView({ behavior: "smooth" });
+          targetpage.scrollIntoView();
         }
       }
-      console.log(pageRefs.current?.length);
       setAllPagesLoaded(pageRefs.current?.length === numPages);
-    }, [allPagesLoaded, pageRefs.current]);
+    }, [allPagesLoaded, pageRefs.current, fullscreen]);
 
     useEffect(() => {
       const handleFullscreenChange = () => {
         setFullscreen(!!document.fullscreenElement);
+        setTimeout(() => setStopObserver(false), 300);
       };
       document.addEventListener("fullscreenchange", handleFullscreenChange);
 
@@ -123,12 +125,12 @@ const DynamicPdfViewer = dynamic(async () => {
       const container = containerRef.current;
       if (!container) return;
 
+      setStopObserver(true);
+
       if (document.fullscreenElement) {
         document.exitFullscreen();
-        setFullscreen(false);
       } else {
         container.requestFullscreen();
-        setFullscreen(true);
       }
     };
 
