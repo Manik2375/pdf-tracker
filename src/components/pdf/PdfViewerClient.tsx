@@ -67,7 +67,7 @@ const DynamicPdfViewer = dynamic(async () => {
         }
       }
       setAllPagesLoaded(pageRefs.current?.length === numPages);
-    }, [allPagesLoaded, pageRefs.current, fullscreen]);
+    }, [allPagesLoaded, pageRefs.current, fullscreen, scale]);
 
     useEffect(() => {
       const handleFullscreenChange = () => {
@@ -84,16 +84,25 @@ const DynamicPdfViewer = dynamic(async () => {
       };
     }, []);
 
+    const handleScaleChange = (type: "increase" | "decrease") => {
+      setStopObserver(true);
+      setScale((prev) => {
+        if (type === "increase") return Math.min(2.0, prev + 0.1);
+        else if (type === "decrease") {
+          return Math.max(0.8, prev - 0.1);
+        }
+        return prev;
+      });
+      setTimeout(() => setStopObserver(false), 800);
+    };
+
     useEffect(() => {
       const handleWheel = (e: WheelEvent) => {
         if (e.ctrlKey || e.metaKey) {
           e.preventDefault();
 
-          setScale((prev) => {
-            const newState = e.deltaY > 0 ? prev - 0.1 : prev + 0.1;
-
-            return Math.min(3, Math.max(0.5, newState));
-          });
+          const newState = e.deltaY > 0 ? "decrease" : "increase";
+          handleScaleChange(newState);
         }
       };
       window.addEventListener("wheel", handleWheel, { passive: false });
@@ -210,7 +219,7 @@ const DynamicPdfViewer = dynamic(async () => {
               <div className="flex gap-2">
                 <button
                   className="btn btn-ghost btn-neutral  p-1 rounded-full aspect-square"
-                  onClick={() => setScale((prev) => Math.max(0.5, prev - 0.1))}
+                  onClick={() => handleScaleChange("decrease")}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -230,7 +239,7 @@ const DynamicPdfViewer = dynamic(async () => {
                 </button>
                 <button
                   className="btn btn-ghost btn-neutral p-1 rounded-full aspect-square"
-                  onClick={() => setScale((prev) => Math.min(2.0, prev + 0.1))}
+                  onClick={() => handleScaleChange("increase")}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
