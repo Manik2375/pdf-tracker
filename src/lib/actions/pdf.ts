@@ -36,56 +36,6 @@ export async function generateUploadSignature(folderName?: string): Promise<{
   };
 }
 
-export async function uploadPdf(
-  file: File,
-  folderName?: strin,
-): Promise<{ public_id: string; folder: string }> {
-  const { signature, timestamp, folder, cloudName, apiKey } =
-    await generateUploadSignature(folderName);
-  const formData = new FormData();
-
-  formData.append("file", file);
-  formData.append("api_key", apiKey);
-  formData.append("timestamp", String(timestamp));
-  formData.append("signature", signature);
-  formData.append("folder", folder);
-
-  const uploadResponse = await fetch(
-    `https://api.cloudinary.com/v1_1/${cloudName}/raw/upload`,
-    {
-      method: "POST",
-      body: formData,
-    },
-  ).then((res) => res.json());
-
-  return { public_id: uploadResponse.public_id, folder: folder };
-}
-
-export async function uploadPdfCover(
-  file: File,
-  folderName?: string,
-): Promise<{ public_id: string; folder: string }> {
-  const { signature, timestamp, folder, cloudName, apiKey } =
-    await generateUploadSignature(folderName);
-  const formData = new FormData();
-
-  formData.append("file", file);
-  formData.append("api_key", apiKey);
-  formData.append("timestamp", String(timestamp));
-  formData.append("signature", signature);
-  formData.append("folder", folder);
-
-  const uploadResponse = await fetch(
-    `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-    {
-      method: "POST",
-      body: formData,
-    },
-  ).then((res) => res.json());
-
-  return { public_id: uploadResponse.public_id, folder: uploadResponse.folder };
-}
-
 export async function deletePdf(pdfId: string, cloudinaryPublicId: string) {
   try {
     console.log(cloudinaryPublicId);

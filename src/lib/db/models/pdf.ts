@@ -10,7 +10,6 @@ export interface IPDF {
   userId: mongoose.Types.ObjectId;
   progress: number;
   totalPages: number;
-  cover: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -22,7 +21,6 @@ export interface SerializedIPDF {
   description: string;
   author: string;
   folder: string | null;
-  cover: string;
   progress: number;
   totalPages: number;
   userId?: string;
@@ -54,10 +52,6 @@ export const pdfSchema = new Schema<IPDF>(
       required: true,
     },
     folder: {
-      type: String,
-      required: true,
-    },
-    cover: {
       type: String,
       required: true,
     },

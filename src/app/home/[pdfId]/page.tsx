@@ -19,7 +19,7 @@ export default function PDFViewer({
     fetchData();
   }, [params]);
 
-  const pdfLink = `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/raw/upload/${pdfData?.cloudinaryPublicId}`;
+  const pdfLink = `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/${pdfData?.cloudinaryPublicId}`;
   if (!pdfData) {
     return <p>No PDF found.</p>;
   }

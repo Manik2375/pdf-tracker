@@ -12,7 +12,6 @@ export async function uploadPdfMetadata({
   description,
   totalPages,
   author,
-  cover,
 }: {
   pdfId: string;
   folder: string;
@@ -20,7 +19,6 @@ export async function uploadPdfMetadata({
   description: string;
   totalPages: number;
   author: string;
-  cover: string;
 }) {
   await connectToDatabase();
 
@@ -41,7 +39,6 @@ export async function uploadPdfMetadata({
       totalPages,
       progress: 1,
       userId: session.user._id,
-      cover,
     });
 
     return { success: true };
