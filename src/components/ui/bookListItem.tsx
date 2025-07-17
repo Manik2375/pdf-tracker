@@ -76,13 +76,13 @@ export default function BookListItem({
           </span>
         </p>
         <p className="tooltip text-neutral font-light w-max" data-tip={author}>
-          <span>{author}</span>
+          <span className="block text-nowrap overflow-ellipsis overflow-x-hidden max-w-[7em]">{author}</span>
         </p>
         <p
           className="tooltip text-base-content font-light w-max"
           data-tip={description}
         >
-          <span>{description}</span>
+          <span className="block text-nowrap overflow-ellipsis overflow-x-hidden max-w-[15em]">{description}</span>
         </p>
         <button
           className="btn btn-soft btn-neutral ml-auto md:ml-0"
