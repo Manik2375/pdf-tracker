@@ -145,7 +145,7 @@ const DynamicPdfViewer = dynamic(async () => {
 
     return (
       <div
-        className={`${fullscreen ? "" : "px-5 py-6 rounded-box"} relative flex  pt-0 space-y-6 bg-base-200`}
+        className={`${fullscreen ? "" : "px-5 py-6 rounded-box"} relative flex  pt-0 pr-0 space-y-6 bg-base-200`}
       >
         <div
           className={`overflow-y-auto w-full flex flex-col items-center ${fullscreen ? "h-full" : " mt-20 h-[85vh]"}`}
@@ -154,7 +154,7 @@ const DynamicPdfViewer = dynamic(async () => {
           <div
             className={`${fullscreen ? "sticky" : "absolute rounded-t-box"} flex justify-between items-center top-0 left-0 right-0 p-5 w-full bg-[#0000004a] backdrop-blur-xs z-10`}
           >
-            <p>Chronicles of owl</p>
+            <p>{pdfDoc.title}</p>
             <div className="flex gap-5 items-center">
               <div className="flex gap-2">
                 <button
@@ -287,7 +287,7 @@ const DynamicPdfViewer = dynamic(async () => {
           </div>
 
           <Document
-            file={"/test.pdf"}
+            file={pdfLink}
             onLoadSuccess={async (pdf) => {
               pageRefs.current = Array(numPages).fill(null);
 

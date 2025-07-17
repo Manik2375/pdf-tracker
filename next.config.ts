@@ -13,12 +13,17 @@ const nextConfig: NextConfig = {
         hostname: "lh3.googleusercontent.com",
         pathname: "/**",
       },
-       {
+      {
         protocol: "https",
-        hostname: "s2982.pcdn.co",
+        hostname: "res.cloudinary.com",
         pathname: "/**",
       },
     ],
+  },
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "2mb",
+    },
   },
 };
 

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, ComponentType } from "react";
-import { generateUploadSignature, uploadPdfMetadata } from "@/lib/actions";
+import { uploadPdf, uploadPdfCover, uploadPdfMetadata } from "@/lib/actions";
 import dynamic from "next/dynamic";
 
 interface PdfUploaderProps {
@@ -39,23 +39,7 @@ const DynamicPdfUploader = dynamic(
         }
         setLoading(true);
         try {
-          const { signature, timestamp, folder, cloudName, apiKey } =
-            await generateUploadSignature();
-          const formData = new FormData();
-
-          formData.append("file", file);
-          formData.append("api_key", apiKey);
-          formData.append("timestamp", String(timestamp));
-          formData.append("signature", signature);
-          formData.append("folder", folder);
-
-          const uploadResponse = await fetch(
-            `https://api.cloudinary.com/v1_1/${cloudName}/raw/upload`,
-            {
-              method: "POST",
-              body: formData,
-            },
-          ).then((res) => res.json());
+          const { public_id: pdfId, folder: pdfFolder } = await uploadPdf(file);
 
           const filereader = new FileReader();
           const filename = file.name;
@@ -73,15 +57,49 @@ const DynamicPdfUploader = dynamic(
               const description = info.Subject || "No description found";
               const author = info.Author || "Unknown Author";
 
+              const page = await pdf.getPage(1);
+              const viewport = page.getViewport({ scale: 0.6 });
+              const canvas = document.createElement("canvas");
+              const context = canvas.getContext("2d");
+              canvas.width = viewport.width;
+              canvas.height = viewport.height;
+
+              if (!context) {
+                console.error("Error getting canvas context for cover upload");
+                return;
+              }
+              await page.render({ canvasContext: context, viewport }).promise;
+
+              const coverBlob = await new Promise<Blob>((resolve) => {
+                canvas.toBlob((blob) => {
+                  if (!blob) {
+                    console.error("Couldn't covert canvas to blob");
+                    return;
+                  }
+                  resolve(blob);
+                }, "image/png");
+              });
+
+              const coverFile = new File([coverBlob], `cover_${pdfId}`, {
+                type: "image/png",
+              });
+
+              const { public_id: coverId } = await uploadPdfCover(
+                coverFile,
+                "PdfTracker/covers",
+              );
+              // I am not sure if storing id and folder of Cover would be better. I am believing that ids and folder once set, will never change;
+
+              const coverLink = `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/w_400/${coverId}`;
+
               await uploadPdfMetadata({
-                pdfId: uploadResponse.public_id,
-                folder,
+                pdfId: pdfId,
+                folder: pdfFolder,
                 title: title,
                 description: description,
                 totalPages: totalPages,
                 author: author,
-                cover:
-                  "https://s2982.pcdn.co/wp-content/uploads/2018/06/the-barn-owls-by-tony-johnston-book-cover.jpg.optimal.jpg",
+                cover: coverLink,
               });
 
               onSuccessfulUploadAction();
