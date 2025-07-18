@@ -154,7 +154,9 @@ const DynamicPdfViewer = dynamic(async () => {
           <div
             className={`${fullscreen ? "sticky" : "absolute rounded-t-box"} flex justify-between items-center top-0 left-0 right-0 p-5 w-full bg-[#0000004a] backdrop-blur-xs z-10`}
           >
-            <p>{pdfDoc.title}</p>
+            <p className="hidden md:block max-w-[15em] overflow-hidden overflow-ellipsis">
+              {pdfDoc.title}
+            </p>
             <div className="flex gap-5 items-center">
               <div className="flex gap-2">
                 <button
