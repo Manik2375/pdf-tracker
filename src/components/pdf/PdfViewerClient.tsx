@@ -31,6 +31,8 @@ const DynamicPdfViewer = dynamic(async () => {
 
     const numPages = pdfDoc.totalPages;
 
+    const debounceTimeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
+
     useEffect(() => {
       observerRef.current = new IntersectionObserver(
         (entries) => {
@@ -39,12 +41,19 @@ const DynamicPdfViewer = dynamic(async () => {
             if (entry.isIntersecting && allPagesLoaded) {
               const target = entry.target as HTMLElement;
               const pageNumber = Number(target.dataset.pagenumber || 1);
+
               setCurrentPage(+pageNumber);
-              try {
-                await updatePdfProgress(pdfDoc._id, pageNumber);
-              } catch (error) {
-                console.error(error);
+              if (debounceTimeoutRef.current) {
+                clearTimeout(debounceTimeoutRef.current);
               }
+
+              debounceTimeoutRef.current = setTimeout(async () => {
+                try {
+                  await updatePdfProgress(pdfDoc._id, pageNumber);
+                } catch (error) {
+                  console.error(error);
+                }
+              }, 2000);
             }
           });
         },
