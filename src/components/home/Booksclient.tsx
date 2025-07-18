@@ -97,7 +97,6 @@ export default function BooksClient({
                   bookName={pdf.title}
                   description={pdf.description}
                   author={pdf.author}
-                  coverPicture={pdf?.cover}
                   progress={pdf.progress ?? 1}
                   totalPages={pdf.totalPages}
                 />

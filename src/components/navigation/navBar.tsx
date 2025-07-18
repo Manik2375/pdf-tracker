@@ -57,7 +57,9 @@ export default async function NavBar() {
             ))}
           </ul>
         </div>
-        <a className="btn btn-ghost text-xl">PDF tracker</a>
+        <Link className="btn btn-ghost text-xl" href="/home">
+          PDF tracker
+        </Link>
       </div>
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1">

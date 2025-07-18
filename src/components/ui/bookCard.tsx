@@ -3,19 +3,20 @@ import Link from "next/link";
 
 export default function BookCard({
   pdfId,
+  cloudinaryPublicId,
   bookName,
   author,
-  coverPicture,
   progress,
   totalPages,
 }: {
   pdfId: string;
+  cloudinaryPublicId: string;
   bookName: string;
   author: string;
-  coverPicture: string;
   progress: number;
   totalPages: number;
 }) {
+  const coverPicture = `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/pg_1/w_400/${cloudinaryPublicId}.png`;
   return (
     <div className="relative card min-w-[12em] max-w-[14em] flex-1 bg-base-100 shadow-sm rounded-box overflow-hidden aspect-[1/1.5]">
       <figure>

@@ -40,9 +40,9 @@ export default function HomeClient({
               <BookCard
                 key={pdf?._id}
                 pdfId={pdf._id}
+                cloudinaryPublicId={pdf.cloudinaryPublicId}
                 bookName={pdf?.title}
                 author={pdf?.author}
-                coverPicture={`https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/pg_1/w_400/${pdf.cloudinaryPublicId}.png`}
                 progress={pdf?.progress}
                 totalPages={pdf?.totalPages}
               />

@@ -9,7 +9,6 @@ export default function BookListItem({
   bookName,
   author,
   description,
-  coverPicture,
   progress,
   totalPages,
 }: {
@@ -18,7 +17,6 @@ export default function BookListItem({
   bookName: string;
   author: string;
   description: string;
-  coverPicture: string;
   progress: number;
   totalPages: number;
 }) {
@@ -42,6 +40,7 @@ export default function BookListItem({
     }
   }, [pdfId, cloudinaryPublicId]);
 
+  const coverPicture = `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/pg_1/w_400/${cloudinaryPublicId}.png`;
   return (
     <>
       <li
