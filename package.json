@@ -9,17 +9,23 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@react-pdf-viewer/core": "^3.12.0",
+    "@react-pdf-viewer/default-layout": "^3.12.0",
+    "@react-pdf-viewer/full-screen": "^3.12.0",
+    "@react-pdf-viewer/page-navigation": "^3.12.0",
+    "@react-pdf-viewer/scroll-mode": "^3.12.0",
+    "@react-pdf-viewer/zoom": "^3.12.0",
     "@types/bcrypt": "^5.0.2",
     "bcrypt": "^6.0.0",
+    "canvas": "^3.1.2",
     "cloudinary": "^2.7.0",
     "mongodb": "^6.17.0",
     "mongoose": "^8.15.2",
     "next": "15.3.3",
     "next-auth": "^5.0.0-beta.28",
-    "pdfjs-dist": "^5.3.31",
+    "pdfjs-dist": "^3.4.120",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "react-pdf": "^10.0.1"
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
