@@ -40,7 +40,7 @@ export async function deletePdf(pdfId: string, cloudinaryPublicId: string) {
   try {
     console.log(cloudinaryPublicId);
     const result = await cloudinary.uploader.destroy(cloudinaryPublicId, {
-      resource_type: "raw",
+      resource_type: "image",
     });
     const resultMetaData = await deletePdfMetaData(pdfId);
     console.log(pdfId, result);

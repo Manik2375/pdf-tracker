@@ -2,6 +2,9 @@ import React, { useCallback, useRef, useState } from "react";
 import Image from "next/image";
 import { deletePdf } from "@/lib/actions";
 import { useRouter } from "next/navigation";
+import BookDeleteModal, {
+  BookDeleteModalRef,
+} from "@/components/ui/bookDeleteModal";
 
 export default function BookListItem({
   pdfId,
@@ -20,13 +23,13 @@ export default function BookListItem({
   progress: number;
   totalPages: number;
 }) {
-  const deleteRef = useRef<HTMLDialogElement | null>(null);
+  const deleteRef = useRef<BookDeleteModalRef | null>(null);
   const router = useRouter();
-  const [loading, setLoading] = useState<boolean>(false);
+  const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
 
   const handleDelete = useCallback(async () => {
     try {
-      setLoading(true);
+      setDeleteLoading(true);
       console.log(cloudinaryPublicId);
       const result = await deletePdf(pdfId, cloudinaryPublicId);
       if (result?.success == true) {
@@ -36,7 +39,7 @@ export default function BookListItem({
     } catch (e) {
       console.error("Error deleting PDF ", e);
     } finally {
-      setLoading(false);
+      setDeleteLoading(false);
     }
   }, [pdfId, cloudinaryPublicId]);
 
@@ -75,13 +78,17 @@ export default function BookListItem({
           </span>
         </p>
         <p className="tooltip text-neutral font-light w-max" data-tip={author}>
-          <span className="block text-nowrap overflow-ellipsis overflow-x-hidden max-w-[7em]">{author}</span>
+          <span className="block text-nowrap overflow-ellipsis overflow-x-hidden max-w-[7em]">
+            {author}
+          </span>
         </p>
         <p
           className="tooltip text-base-content font-light w-max"
           data-tip={description}
         >
-          <span className="block text-nowrap overflow-ellipsis overflow-x-hidden max-w-[15em]">{description}</span>
+          <span className="block text-nowrap overflow-ellipsis overflow-x-hidden max-w-[15em]">
+            {description}
+          </span>
         </p>
         <button
           className="btn btn-soft btn-neutral ml-auto md:ml-0"
@@ -116,64 +123,19 @@ export default function BookListItem({
           <li>
             <button
               className="btn btn-error"
-              onClick={() => deleteRef.current?.showModal()}
+              onClick={() => deleteRef.current?.open()}
             >
               Delete
             </button>{" "}
           </li>
         </ul>
       </li>
-      <dialog ref={deleteRef} className="modal backdrop-blur-xs">
-        <div className="modal-box">
-          <h3 className="font-bold text-lg text-warning">Delete PDF?</h3>
-          <p className="py-4">
-            Are you sure you want to delete{" "}
-            <span className="inline-block align-middle overflow-hidden max-w-44 overflow-ellipsis text-nowrap text-primary">
-              {bookName}
-            </span>{" "}
-            PDF?
-          </p>
-          <div role="alert" className="alert alert-warning">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6 shrink-0 stroke-current"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-              />
-            </svg>
-            <span>Warning: This action can&apos;t be undone</span>
-          </div>
-          <div className="mt-5 flex justify-end gap-5">
-            <button className="btn btn-error" onClick={handleDelete}>
-              {loading ? (
-                <span>
-                  Deleting{" "}
-                  <span className="loading loading-spinner loading-l"></span>
-                </span>
-              ) : (
-                "Yes, Delete"
-              )}
-            </button>
-            <button
-              className="btn"
-              onClick={() => {
-                deleteRef.current?.close();
-              }}
-            >
-              Nope
-            </button>
-          </div>
-        </div>
-        <form method="dialog" className="modal-backdrop">
-          <button>close</button>
-        </form>
-      </dialog>
+      <BookDeleteModal
+        ref={deleteRef}
+        pdfTitle={bookName}
+        handleDelete={handleDelete}
+        loading={deleteLoading}
+      />
     </>
   );
 }
