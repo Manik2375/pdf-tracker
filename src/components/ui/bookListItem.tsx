@@ -5,6 +5,10 @@ import { useRouter } from "next/navigation";
 import BookDeleteModal, {
   BookDeleteModalRef,
 } from "@/components/ui/bookDeleteModal";
+import BookMetaDataModal, {
+  BookMetaDataModalRef,
+} from "@/components/ui/bookMetaDataModal";
+import { updatePdfMetadata } from "@/lib/actions";
 
 export default function BookListItem({
   pdfId,
@@ -14,6 +18,7 @@ export default function BookListItem({
   description,
   progress,
   totalPages,
+  onDataChang,
 }: {
   pdfId: string;
   cloudinaryPublicId: string;
@@ -22,10 +27,16 @@ export default function BookListItem({
   description: string;
   progress: number;
   totalPages: number;
+  onDataChange: () => void;
 }) {
-  const deleteRef = useRef<BookDeleteModalRef | null>(null);
   const router = useRouter();
+
+  const deleteRef = useRef<BookDeleteModalRef | null>(null);
+
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
+  const [editLoading, setEditLoading] = useState<boolean>(false);
+
+  const editModalRef = useRef<BookMetaDataModalRef | null>(null);
 
   const handleDelete = useCallback(async () => {
     try {
@@ -33,6 +44,7 @@ export default function BookListItem({
       console.log(cloudinaryPublicId);
       const result = await deletePdf(pdfId, cloudinaryPublicId);
       if (result?.success == true) {
+        onDataChange();
         alert("PDF deleted successfully");
         deleteRef.current?.close();
       }
@@ -42,6 +54,40 @@ export default function BookListItem({
       setDeleteLoading(false);
     }
   }, [pdfId, cloudinaryPublicId]);
+
+  const handleMetadataUpdate = useCallback(
+    async ({
+      title,
+      author,
+      description,
+    }: {
+      title: string;
+      author: string;
+      description: string;
+    }) => {
+      try {
+        if (!editModalRef.current) return;
+        setEditLoading(true);
+        const result = await updatePdfMetadata(pdfId, {
+          title,
+          author,
+          description,
+        });
+        if (result.success) {
+          onDataChange();
+          alert("PDF updated successfully");
+          editModalRef.current.close();
+        } else {
+          alert("PDF Updating failed");
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setEditLoading(false);
+      }
+    },
+    [pdfId],
+  );
 
   const coverPicture = `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/pg_1/w_400/${cloudinaryPublicId}.png`;
   return (
@@ -113,9 +159,7 @@ export default function BookListItem({
           <li>
             <button
               className="btn btn-neutral "
-              onClick={() => {
-                alert("Under construction U_U");
-              }}
+              onClick={() => editModalRef.current?.open()}
             >
               Edit
             </button>{" "}
@@ -135,6 +179,14 @@ export default function BookListItem({
         pdfTitle={bookName}
         handleDelete={handleDelete}
         loading={deleteLoading}
+      />
+      <BookMetaDataModal
+        ref={editModalRef}
+        handleUpdate={handleMetadataUpdate}
+        pdfTitle={bookName}
+        author={author}
+        description={description}
+        loading={editLoading}
       />
     </>
   );

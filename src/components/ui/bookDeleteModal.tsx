@@ -11,7 +11,7 @@ export default function BookDeleteModal({
   handleDelete,
   loading,
 }: {
-  ref: React.RefObject<BookDeleteModalRef> | null;
+  ref: React.RefObject<BookDeleteModalRef | null>;
   pdfTitle: string;
   handleDelete: () => void;
   loading?: boolean;
@@ -66,6 +66,7 @@ export default function BookDeleteModal({
           </button>
           <button
             className="btn"
+            disabled={loading}
             onClick={() => {
               deleteRef.current?.close();
             }}
@@ -75,7 +76,7 @@ export default function BookDeleteModal({
         </div>
       </div>
       <form method="dialog" className="modal-backdrop">
-        <button>close</button>
+        <button disabled={loading}>close</button>
       </form>
     </dialog>
   );

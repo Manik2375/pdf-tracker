@@ -134,3 +134,43 @@ export async function updatePdfProgress(pdfId: string, progress: number) {
     console.error(e);
   }
 }
+
+export async function updatePdfMetadata(
+  pdfId: string,
+  newPdfMetadata: {
+    title: string;
+    author: string;
+    description: string;
+  },
+): Promise<
+  { success: false; error: string } | { success: true; data: string }
+> {
+  try {
+    const session = await auth();
+    if (!session) {
+      throw new Error("No session");
+    }
+
+    await connectToDatabase();
+
+    console.log(newPdfMetadata);
+    const doc = await PDF.findOneAndUpdate(
+      {
+        _id: pdfId,
+        userId: session.user._id,
+      },
+      {
+        title: newPdfMetadata.title,
+        author: newPdfMetadata.author,
+        description: newPdfMetadata.description,
+      },
+    );
+
+    if (!doc) throw new Error("No pdf found to update data");
+
+    return { success: true, data: "PDF metadata updated successfully" };
+  } catch (error) {
+    console.error(error);
+    return { success: false, error: String(error) };
+  }
+}
