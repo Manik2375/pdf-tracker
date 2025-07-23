@@ -18,7 +18,7 @@ export default function BookListItem({
   description,
   progress,
   totalPages,
-  onDataChang,
+  onDataChange,
 }: {
   pdfId: string;
   cloudinaryPublicId: string;
