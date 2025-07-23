@@ -2,6 +2,7 @@
 
 import React, { useState, useRef } from "react";
 import { generateUploadSignature, uploadPdfMetadata } from "@/lib/actions";
+import { UploadLimitError } from "@/lib/errors";
 
 import * as pdfjsLib from "pdfjs-dist";
 
@@ -23,25 +24,33 @@ async function uploadPdf(
   file: File,
   folderName?: string,
 ): Promise<{ public_id: string; folder: string }> {
-  const { signature, timestamp, folder, cloudName, apiKey } =
-    await generateUploadSignature(folderName);
-  const formData = new FormData();
+  try {
+    const { signature, timestamp, folder, cloudName, apiKey } =
+      await generateUploadSignature(folderName);
+    const formData = new FormData();
 
-  formData.append("file", file);
-  formData.append("api_key", apiKey);
-  formData.append("timestamp", String(timestamp));
-  formData.append("signature", signature);
-  formData.append("folder", folder);
+    formData.append("file", file);
+    formData.append("api_key", apiKey);
+    formData.append("timestamp", String(timestamp));
+    formData.append("signature", signature);
+    formData.append("folder", folder);
 
-  const uploadResponse = await fetch(
-    `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-    {
-      method: "POST",
-      body: formData,
-    },
-  ).then((res) => res.json());
+    const uploadResponse = await fetch(
+      `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+      {
+        method: "POST",
+        body: formData,
+      },
+    ).then((res) => res.json());
 
-  return { public_id: uploadResponse.public_id, folder: folder };
+    return { public_id: uploadResponse.public_id, folder: folder };
+  } catch (error) {
+    console.log("TEST", error instanceof UploadLimitError, error);
+    if ((error as Error).name === "UploadLimitError") {
+      alert((error as Error).message);
+    }
+    throw error;
+  }
 }
 
 export const PdfUploader = ({ onSuccessfulUploadAction }: PdfUploaderProps) => {
@@ -57,6 +66,7 @@ export const PdfUploader = ({ onSuccessfulUploadAction }: PdfUploaderProps) => {
       return;
     }
     setLoading(true);
+
     try {
       const { public_id: pdfId, folder: pdfFolder } = await uploadPdf(file);
 

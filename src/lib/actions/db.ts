@@ -174,3 +174,26 @@ export async function updatePdfMetadata(
     return { success: false, error: String(error) };
   }
 }
+
+export async function countPdfsOfUser(): Promise<number> {
+  try {
+    const session = await auth();
+    if (!session) {
+      throw new Error("No session");
+    }
+
+    await connectToDatabase();
+
+    const numPdfs = await PDF.countDocuments({
+      userId: session.user._id,
+    });
+
+    if (!numPdfs) {
+      throw new Error("No pdf found for user");
+    }
+    return numPdfs;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
