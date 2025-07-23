@@ -17,6 +17,8 @@ export async function handleSignUp(email: string, password: string) {
     password: password,
     name: email.split("@")[0],
     isEmailVerified: true,
+    avatar:
+      "https://res.cloudinary.com/theowl/image/upload/w_256,h_256,c_fill/13d292bb-a2ba-4a89-9f85-ededeb790bc1.png",
   });
 
   try {
