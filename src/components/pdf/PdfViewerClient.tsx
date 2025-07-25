@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { SerializedIPDF } from "@/lib/db/models/pdf";
 import { updatePdfProgress } from "@/lib/actions";
 
@@ -23,6 +23,7 @@ export function PdfViewerClient({ pdfLink, pdfDoc }: PdfViewerClientProps) {
   const [currentPage, setCurrentPage] = useState<number>(pdfDoc.progress);
   const [fullscreen, setFullscreen] = useState<boolean>(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const [hideNavbar, setHideNavBar] = useState<boolean>(false);
 
   const debounceTimeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
 
@@ -52,7 +53,7 @@ export function PdfViewerClient({ pdfLink, pdfDoc }: PdfViewerClientProps) {
   const handlePageInputChange = (
     e:
       | React.FocusEvent<HTMLInputElement>
-      | React.KeyboardEvent<HTMLInputElement>,
+      | React.KeyboardEvent<HTMLInputElement>
   ) => {
     const val = +e.currentTarget?.value;
     setCurrentPage(val);
@@ -72,16 +73,38 @@ export function PdfViewerClient({ pdfLink, pdfDoc }: PdfViewerClientProps) {
     }
   };
 
+  const previousOffset = useRef<number>(0);
+  useEffect(() => {
+    const container = document.querySelector(".rpv-core__inner-pages");
+    console.log(container)
+    if (!container) return;
+    const handleNavbarHide = () => {
+      if (!fullscreen) return;
+      const diff = container.scrollTop - previousOffset.current
+      console.log(diff);   
+      if (diff > 20) {
+        setHideNavBar(true);
+      } else if (diff < -20) {
+        setHideNavBar(false);
+      }
+      previousOffset.current = container.scrollTop;
+    };
+    container.addEventListener("scroll", handleNavbarHide);
+
+
+    return () => container.removeEventListener("scroll", handleNavbarHide);
+  }, [fullscreen]);
+
   return (
     <div
       className={`${fullscreen ? "" : "px-5 py-6 rounded-box"} relative flex  pt-0 pr-0 space-y-6 bg-base-200`}
     >
       <div
-        className={`overflow-y-auto w-full flex flex-col items-center  ${fullscreen ? "h-full" : " mt-20 h-[85vh]"}`}
+        className={`overflow-y-auto w-full flex flex-col items-center  ${fullscreen ? "h-full pt-20" : " mt-20 h-[85vh]"} transition-[padding-top_250ms] ${hideNavbar ? "pt-[0]": ""}`}
         ref={containerRef}
       >
         <div
-          className={`${fullscreen ? "sticky" : "absolute rounded-t-box"} flex justify-between items-center top-0 left-0 right-0 p-5 w-full bg-base-100 z-10`}
+          className={`${fullscreen ? "" : "rounded-t-box"} absolute flex justify-between items-center transition-[transform_250ms] ${hideNavbar ? "translate-y-[-100%]" : ""} top-0 left-0 right-0 p-5 w-full bg-base-100 z-10`}
         >
           <p className="hidden md:block max-w-[15em] overflow-hidden overflow-ellipsis">
             {pdfDoc.title}
