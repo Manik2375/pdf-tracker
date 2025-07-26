@@ -31,9 +31,9 @@ export async function generateUploadSignature(folderName?: string): Promise<{
     const signature = cloudinary.utils.api_sign_request(
       {
         timestamp,
-        folde,
+        folder,
       },
-      process.env.CLOUDINARY_API_SECRET,
+      process.env.CLOUDINARY_API_SECRET as string,
     );
 
     return {

@@ -61,8 +61,10 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
   jwt: {
     maxAge: 60 * 60 * 24 * 30,
   },
+  trustHost: true,
   callbacks: {
     async signIn({ user, account }) {
+      console.log("inital test")
       if (!account) return false;
 
       await connectToDatabase();
@@ -74,6 +76,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         return true;
       }
       if (account?.provider != "credentials") {
+        console.log("test")
         await User.create({
           email: user.email,
           avatar: user.image,
