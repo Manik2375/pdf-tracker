@@ -6,7 +6,7 @@ export async function middleware(request: NextRequest) {
     req: request,
     secret: process.env.AUTH_SECRET,
   });
-  console.log("Middleware working")
+  console.log("Middleware working", token)
   const url = request.nextUrl;
   if (token && url.pathname === "/") {
     return NextResponse.redirect(new URL("/home", request.url));
