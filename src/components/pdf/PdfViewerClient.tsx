@@ -73,27 +73,27 @@ export function PdfViewerClient({ pdfLink, pdfDoc }: PdfViewerClientProps) {
     }
   };
 
-  const previousOffset = useRef<number>(0);
-  useEffect(() => {
-    const container = document.querySelector(".rpv-core__inner-pages");
-    console.log(container)
-    if (!container) return;
-    const handleNavbarHide = () => {
-      if (!fullscreen) return;
-      const diff = container.scrollTop - previousOffset.current
-      console.log(diff);   
-      if (diff > 20) {
-        setHideNavBar(true);
-      } else if (diff < -20) {
-        setHideNavBar(false);
-      }
-      previousOffset.current = container.scrollTop;
-    };
-    container.addEventListener("scroll", handleNavbarHide);
+  // const previousOffset = useRef<number>(0);
+  // useEffect(() => {
+  //   const container = document.querySelector(".rpv-core__inner-pages");
+  //   console.log(container)
+  //   if (!container) return;
+  //   const handleNavbarHide = () => {
+  //     if (!fullscreen) return;
+  //     const diff = container.scrollTop - previousOffset.current
+  //     console.log(diff);   
+  //     if (diff > 20) {
+  //       setHideNavBar(true);
+  //     } else if (diff < -20) {
+  //       setHideNavBar(false);
+  //     }
+  //     previousOffset.current = container.scrollTop;
+  //   };
+  //   container.addEventListener("scroll", handleNavbarHide);
 
 
-    return () => container.removeEventListener("scroll", handleNavbarHide);
-  }, [fullscreen]);
+  //   return () => container.removeEventListener("scroll", handleNavbarHide);
+  // }, [fullscreen]);
 
   return (
     <div
