@@ -77,7 +77,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       }
       if (account?.provider != "credentials") {
         console.log("test")
-        await User.create({
+        const newUser = await User.create({
           email: user.email,
           avatar: user.image,
           providerID: account.providerAccountId,
@@ -86,6 +86,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
           isEmailVerified: true,
           lastLoginAt: new Date(),
         });
+        user._id = newUser._id?.toString();
       }
       return true;
     },
@@ -105,6 +106,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         session.user.isEmailVerified = token.isEmailVerified;
         session.user.avatar = token.avatar ?? token.image;
       }
+      console.log(session)
       return session;
     },
   },

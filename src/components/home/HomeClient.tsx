@@ -12,7 +12,7 @@ export default function HomeClient({
   session: Session;
   initialPdfs: SerializedIPDF[];
 }) {
-  const [pdfs, setPdfs] = useState<SerializedIPDF[]>(initialPdfs);
+  const [pdfs, setPdfs] = useState<SerializedIPDF[]  | null>(initialPdfs);
 
   const fetchPdfs = useCallback(() => {
     fetch("/api/pdfMetadata")
@@ -35,7 +35,7 @@ export default function HomeClient({
           Pick where you <span className="text-primary">left:</span>
         </h2>
         <div className="flex mt-5 flex-wrap justify-center gap-5">
-          {pdfs.map((pdf) => {
+          {pdfs?.map((pdf) => {
             return (
               <BookCard
                 key={pdf?._id}

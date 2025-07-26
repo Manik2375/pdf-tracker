@@ -28,7 +28,6 @@ export async function uploadPdfMetadata({
 
   console.log(pdfId);
   try {
-    console.log(folder);
     await PDF.create({
       _id: pdfId.split("/")[1].split(".")[0],
       cloudinaryPublicId: pdfId,
@@ -189,7 +188,7 @@ export async function countPdfsOfUser(): Promise<number> {
     });
 
     if (!numPdfs) {
-      throw new Error("No pdf found for user");
+      return 0;
     }
     return numPdfs;
   } catch (error) {
