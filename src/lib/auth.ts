@@ -64,7 +64,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
   trustHost: true,
   callbacks: {
     async signIn({ user, account }) {
-      console.log("inital test")
+      console.log("inital test");
       if (!account) return false;
 
       await connectToDatabase();
@@ -76,7 +76,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         return true;
       }
       if (account?.provider != "credentials") {
-        console.log("test")
+        console.log("test");
         const newUser = await User.create({
           email: user.email,
           avatar: user.image,
@@ -106,24 +106,24 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         session.user.isEmailVerified = token.isEmailVerified;
         session.user.avatar = token.avatar ?? token.image;
       }
-      console.log(session)
+      console.log(session);
       return session;
     },
   },
   pages: {
     signIn: "/",
-    newUser: "/home"
+    newUser: "/home",
   },
   useSecureCookies: true,
-  cookies: {
-  sessionToken: {
-    name: `__Secure-next-auth.session-token`,
-    options: {
-      httpOnly: true,
-      sameSite: "lax",
-      path: "/",
-      secure: true,
-    },
-  },
-}
+  // cookies: {
+  //   sessionToken: {
+  //     name: `__Secure-next-auth.session-token`,
+  //     options: {
+  //       httpOnly: true,
+  //       sameSite: "lax",
+  //       path: "/",
+  //       secure: true,
+  //     },
+  //   },
+  // },
 });
