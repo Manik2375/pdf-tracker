@@ -3,6 +3,7 @@ import "@/app/globals.css";
 import { poppins } from "@/lib/fonts";
 import React from "react";
 import { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next"
 
 export const metadata: Metadata = {
   title: {
@@ -28,8 +29,8 @@ export const metadata: Metadata = {
     images: [
       {
         url: "https://res.cloudinary.com/theowl/image/upload/v1753277926/13d292bb-a2ba-4a89-9f85-ededeb790bc1.png", 
-        width: 1024,
-        height: 1024,
+        width: 300,
+        height: 300,
         alt: "PDF Owl – Smart PDF Tracker",
       },
     ],
@@ -58,6 +59,7 @@ export default function RootLayout({
           className={`${poppins.className} antialiased w-full min-h-screen`}
         >
           {children}
+          <Analytics />
         </body>
       </AuthProvider>
     </html>
