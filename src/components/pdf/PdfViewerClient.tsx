@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { SerializedIPDF } from "@/lib/db/models/pdf";
 import { updatePdfProgress } from "@/lib/actions";
 
@@ -23,7 +23,7 @@ export function PdfViewerClient({ pdfLink, pdfDoc }: PdfViewerClientProps) {
   const [currentPage, setCurrentPage] = useState<number>(pdfDoc.progress);
   const [fullscreen, setFullscreen] = useState<boolean>(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const [hideNavbar, setHideNavBar] = useState<boolean>(false);
+  const [hideNavbar] = useState<boolean>(false);
 
   const debounceTimeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
 
