@@ -3,6 +3,7 @@ import {signIn} from "next-auth/react";
 import { handleSignUp } from "@/lib/actions";
 import React, { FormEvent, useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 
 const oauthApplications = [
@@ -58,6 +59,7 @@ const oauthApplications = [
 type FormState = "signup" | "login"
 export default function Home() {
   const [formState, setFormState] = useState<FormState>("login");
+  const router = useRouter();
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -77,6 +79,7 @@ export default function Home() {
         alert("Please check your email/password.");
         return;
       }
+      router.push("/home");
     } else {
       try {
         await handleSignUp(email as string, password as string);
@@ -89,6 +92,7 @@ export default function Home() {
           alert("Some unexpected error occurred. Please try again later.");
           return;
         }
+        router.push("/home");
       } catch (e) {
         console.error(e);
       }
