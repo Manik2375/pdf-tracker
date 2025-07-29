@@ -214,7 +214,7 @@ export default function Home() {
         </div>
       </div>
       {loading ? (
-        <div className="fixed inset-0  backdrop-blur-[.15em] flex justify-center items-center">
+        <div className="fixed inset-0 z-20  backdrop-blur-[.15em] flex justify-center items-center">
           <div className="p-[4em] bg-base-200 rounded-box  border-primary border-2 flex flex-col justify-center items-center gap-4">
             <span className="loading loading-spinner w-15 "></span>
             <span>Loading, please wait...</span>
