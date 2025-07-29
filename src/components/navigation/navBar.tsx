@@ -1,7 +1,9 @@
-import { auth, signOut } from "@/lib/auth";
+"use client";
+import { signOut } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
+import { useSession } from "next-auth/react";
 
 const pages = [
   {
@@ -21,9 +23,10 @@ const pages = [
   },
 ];
 
-export default async function NavBar() {
-  const session = await auth();
-  if (!session?.user) throw new Error("Not logged in");
+export default function NavBar() {
+  const [loading, setLoading] = useState<boolean>(false);
+  const { data: session } = useSession();
+  if (!session) return <p>User isn&apos;t authenticated</p>;
   return (
     <div className="navbar bg-base-200 shadow-sm rounded-box px-10">
       <div className="navbar-start">
@@ -92,42 +95,55 @@ export default async function NavBar() {
         >
           <button
             className="btn bg-base-100 border-0 hover:bg-error"
+            disabled={loading}
             onClick={async () => {
-              "use server";
-              await signOut();
+              try {
+                setLoading(true);
+                await signOut();
+              } catch (error) {
+                alert("Some unexpected error occurred. Try again later");
+                console.error(error);
+              } finally {
+                setLoading(false);
+              }
             }}
           >
-            {/*<?xml version="1.0" encoding="utf-8"?><!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->*/}
-            <svg
-              width={20}
-              height={20}
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M21 12L13 12"
-                stroke="#323232"
-                strokeWidth={2}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M18 15L20.913 12.087V12.087C20.961 12.039 20.961 11.961 20.913 11.913V11.913L18 9"
-                stroke="#323232"
-                strokeWidth={2}
-                strokeLinecap="round"
-                stroke-linejoinz="round"
-              />
-              <path
-                d="M16 5V4.5V4.5C16 3.67157 15.3284 3 14.5 3H5C3.89543 3 3 3.89543 3 5V19C3 20.1046 3.89543 21 5 21H14.5C15.3284 21 16 20.3284 16 19.5V19.5V19"
-                stroke="#323232"
-                strokeWidth={2}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-            Sign out
+            {loading ? (
+              <span className="loading loading-spinner loading-md"></span>
+            ) : (
+              <>
+                <svg
+                  width={20}
+                  height={20}
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M21 12L13 12"
+                    stroke="#323232"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M18 15L20.913 12.087V12.087C20.961 12.039 20.961 11.961 20.913 11.913V11.913L18 9"
+                    stroke="#323232"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                    stroke-linejoinz="round"
+                  />
+                  <path
+                    d="M16 5V4.5V4.5C16 3.67157 15.3284 3 14.5 3H5C3.89543 3 3 3.89543 3 5V19C3 20.1046 3.89543 21 5 21H14.5C15.3284 21 16 20.3284 16 19.5V19.5V19"
+                    stroke="#323232"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                Sign Out
+              </>
+            )}
           </button>
         </div>
       </div>
