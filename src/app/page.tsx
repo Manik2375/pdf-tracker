@@ -1,7 +1,7 @@
 "use client";
 import {signIn} from "next-auth/react";
 import { handleSignUp } from "@/lib/actions";
-import React, {useState} from "react";
+import React, { FormEvent, useState } from "react";
 import Image from "next/image";
 
 
@@ -58,6 +58,43 @@ const oauthApplications = [
 type FormState = "signup" | "login"
 export default function Home() {
   const [formState, setFormState] = useState<FormState>("login");
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formdata = new FormData(e.currentTarget);
+    const email = formdata.get("email");
+    const password = formdata.get("password");
+    if (!email || !password) {
+      return;
+    }
+    if (formState === "login") {
+      const res = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+      if (res.error) {
+        alert("Please check your email/password.");
+        return;
+      }
+    } else {
+      try {
+        await handleSignUp(email as string, password as string);
+        const res = await signIn("credentials", {
+          email,
+          password,
+          redirect: false,
+        });
+        if (res.error) {
+          alert("Some unexpected error occurred. Please try again later.");
+          return;
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  };
+
   return (
     <div className="w-full min-h-screen p-5 bg-base-300 grid place-items-center md:place-content-center gap-6 md:gap-8 md:pt-0">
       <div className="flex flex-col items-center justify-center gap-2">
@@ -74,25 +111,7 @@ export default function Home() {
         <div className="w-full  flex justify-center p-5 md:pr-0 flex-wrap">
           <form
             className="relative w-[90%] pb-10 md:p-15 md:pl-0  max-w-[40em] border-b-primary/50 border-b-2 md:border-b-0  after:left-[50%] after:top-full  md:border-r-primary/50 md:border-r-2 after:content-['OR'] after:absolute md:after:left-full md:after:top-[50%] after:translate-[-50%] after:w-10 after:h-10 after:bg-base-200 after:grid after:place-items-center after:text-sm"
-            onSubmit={async (e) => {
-              e.preventDefault();
-              const formdata = new FormData(e.currentTarget);
-              const email = formdata.get("email");
-              const password = formdata.get("password");
-              if (!email || !password) {
-                return;
-              }
-              if (formState === "login") {
-                await signIn("credentials", { email, password });
-              } else {
-                try {
-                  await handleSignUp(email as string, password as string);
-                  await signIn("credentials", { email, password });
-                } catch (e) {
-                  console.error(e);
-                }
-              }
-            }}
+            onSubmit={handleSubmit}
           >
             <h2 className="text-center text-[1.65rem] text-base-content w-max mx-auto">
               <label
