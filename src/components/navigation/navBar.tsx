@@ -16,11 +16,6 @@ const pages = [
     title: "Books",
     url: "/home/books",
   },
-  {
-    id: 3,
-    title: "Special",
-    url: "/special",
-  },
 ];
 
 export default function NavBar() {
