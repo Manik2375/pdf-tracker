@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { SerializedIPDF } from "@/lib/db/models/pdf";
 import { updatePdfProgress } from "@/lib/actions";
 
@@ -23,7 +23,8 @@ export function PdfViewerClient({ pdfLink, pdfDoc }: PdfViewerClientProps) {
   const [currentPage, setCurrentPage] = useState<number>(pdfDoc.progress);
   const [fullscreen, setFullscreen] = useState<boolean>(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const [hideNavbar] = useState<boolean>(false);
+  const [hideNavbar, setHideNavBar] = useState<boolean>(false);
+  const manualPageChange = useRef<boolean>(false);
 
   const debounceTimeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
 
@@ -32,6 +33,15 @@ export function PdfViewerClient({ pdfLink, pdfDoc }: PdfViewerClientProps) {
     pageNavigationInstance;
   const zoomPluginInstance = zoomPlugin();
   const { ZoomIn, ZoomOut } = zoomPluginInstance;
+
+  // avoid the hiding of navbar here
+  const pauseNavbarHiding = useCallback(() => {
+    manualPageChange.current = true;
+
+    setTimeout(() => {
+      manualPageChange.current = false;
+    }, 500);
+  }, []);
 
   const handlePageChange = (e: { currentPage: number }) => {
     const newPage = e.currentPage + 1;
@@ -56,6 +66,7 @@ export function PdfViewerClient({ pdfLink, pdfDoc }: PdfViewerClientProps) {
       | React.KeyboardEvent<HTMLInputElement>
   ) => {
     const val = +e.currentTarget?.value;
+    pauseNavbarHiding();
     setCurrentPage(val);
     jumpToPage(val - 1);
   };
@@ -69,38 +80,36 @@ export function PdfViewerClient({ pdfLink, pdfDoc }: PdfViewerClientProps) {
       setFullscreen(false);
     } else {
       container.requestFullscreen();
+      pauseNavbarHiding();
       setFullscreen(true);
     }
   };
 
-  // const previousOffset = useRef<number>(0);
-  // useEffect(() => {
-  //   const container = document.querySelector(".rpv-core__inner-pages");
-  //   console.log(container)
-  //   if (!container) return;
-  //   const handleNavbarHide = () => {
-  //     if (!fullscreen) return;
-  //     const diff = container.scrollTop - previousOffset.current
-  //     console.log(diff);   
-  //     if (diff > 20) {
-  //       setHideNavBar(true);
-  //     } else if (diff < -20) {
-  //       setHideNavBar(false);
-  //     }
-  //     previousOffset.current = container.scrollTop;
-  //   };
-  //   container.addEventListener("scroll", handleNavbarHide);
+  const previousOffset = useRef<number>(0);
+  useEffect(() => {
+    const container = document.querySelector(".rpv-core__inner-pages");
+    if (!container) return;
+    const handleNavbarHide = () => {
+      if (!fullscreen || manualPageChange.current) return;
+      const diff = container.scrollTop - previousOffset.current;
+      if (diff > 30) {
+        setHideNavBar(true);
+      } else if (diff < -20) {
+        setHideNavBar(false);
+      }
+      previousOffset.current = container.scrollTop;
+    };
+    container.addEventListener("scroll", handleNavbarHide);
 
-
-  //   return () => container.removeEventListener("scroll", handleNavbarHide);
-  // }, [fullscreen]);
+    return () => container.removeEventListener("scroll", handleNavbarHide);
+  }, [fullscreen]);
 
   return (
     <div
       className={`${fullscreen ? "" : "px-5 py-6 rounded-box"} relative flex  pt-0 pr-0 space-y-6 bg-base-200`}
     >
       <div
-        className={`overflow-y-auto w-full flex flex-col items-center  ${fullscreen ? "h-full pt-20" : " mt-20 h-[85vh]"} transition-[padding-top_250ms] ${hideNavbar ? "pt-[0]": ""}`}
+        className={`overflow-y-auto w-full flex flex-col items-center  ${fullscreen ? "h-full pt-20" : " mt-20 h-[85vh]"} transition-[padding-top_250ms] ${hideNavbar ? "pt-[0]" : ""}`}
         ref={containerRef}
       >
         <div
@@ -113,7 +122,10 @@ export function PdfViewerClient({ pdfLink, pdfDoc }: PdfViewerClientProps) {
             <div className="flex gap-2">
               <button
                 className="btn btn-neutral aspect-square w-10 p-0"
-                onClick={jumpToPreviousPage}
+                onClick={() => {
+                  pauseNavbarHiding();
+                  jumpToPreviousPage();
+                }}
               >
                 <svg
                   width="24"
@@ -147,7 +159,10 @@ export function PdfViewerClient({ pdfLink, pdfDoc }: PdfViewerClientProps) {
               />
               <button
                 className="btn btn-neutral aspect-square w-10 p-0"
-                onClick={jumpToNextPage}
+                onClick={() => {
+                  pauseNavbarHiding()
+                  jumpToNextPage(); 
+                }}
               >
                 <svg
                   width="24"
@@ -171,7 +186,10 @@ export function PdfViewerClient({ pdfLink, pdfDoc }: PdfViewerClientProps) {
                 {(props: RenderZoomOutProps) => (
                   <button
                     className="btn btn-ghost btn-neutral  p-1 rounded-full aspect-square"
-                    onClick={props.onClick}
+                    onClick={() => {
+                      pauseNavbarHiding();
+                      props.onClick();
+                    }}
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -195,7 +213,10 @@ export function PdfViewerClient({ pdfLink, pdfDoc }: PdfViewerClientProps) {
                 {(props: RenderZoomInProps) => (
                   <button
                     className="btn btn-ghost btn-neutral p-1 rounded-full aspect-square"
-                    onClick={props.onClick}
+                    onClick={() => {
+                      pauseNavbarHiding();
+                      props.onClick();
+                    }}
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
