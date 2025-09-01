@@ -31,6 +31,10 @@ export function PdfViewerClient({ pdfLink, pdfDoc }: PdfViewerClientProps) {
 
   const debounceTimeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
 
+  const [theme, setTheme] = useState<"light" | "dark">(
+    window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+  );
+
   const pageNavigationInstance = pageNavigationPlugin();
   const { jumpToNextPage, jumpToPreviousPage, jumpToPage } =
     pageNavigationInstance;
@@ -157,7 +161,7 @@ export function PdfViewerClient({ pdfLink, pdfDoc }: PdfViewerClientProps) {
       const index = evCache.findIndex(
         (cachedEv: PointerEvent) => cachedEv.pointerId === e.pointerId
       );
-      console.log("test" + index);
+      // console.log("test" + index);
       evCache.splice(index, 1);
       if (evCache.length < 2) {
         prevDiff = -1;
@@ -181,6 +185,15 @@ export function PdfViewerClient({ pdfLink, pdfDoc }: PdfViewerClientProps) {
     };
   }, []);
 
+  useEffect(() => {
+    const darkThemeMedia = window.matchMedia("(prefers-color-scheme: dark)");
+    const onChange = (e: MediaQueryListEvent) =>
+      e.matches ? setTheme("dark") : setTheme("light");
+    darkThemeMedia.addEventListener("change", onChange);
+    return () => {
+      darkThemeMedia.removeEventListener("change", onChange);
+    };
+  }, []);
   return (
     <div
       className={`${fullscreen ? "" : "px-5 py-6 rounded-box"} relative flex touch-none pt-0 pr-0 space-y-6 bg-base-200`}
@@ -346,7 +359,7 @@ export function PdfViewerClient({ pdfLink, pdfDoc }: PdfViewerClientProps) {
 
         <Worker workerUrl="/pdf.worker.js">
           <Viewer
-            theme="auto"
+            theme={theme}
             fileUrl={pdfLink}
             plugins={[zoomPluginInstance, pageNavigationInstance]}
             onPageChange={handlePageChange}
