@@ -112,6 +112,8 @@ export function PdfViewerClient({ pdfLink, pdfDoc }: PdfViewerClientProps) {
     return () => container.removeEventListener("scroll", handleNavbarHide);
   }, [fullscreen]);
 
+  
+
   return (
     <div
       className={`${fullscreen ? "" : "px-5 py-6 rounded-box"} relative flex  pt-0 pr-0 space-y-6 bg-base-200`}

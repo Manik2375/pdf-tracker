@@ -105,7 +105,7 @@ export default function Home() {
   };
 
   return (
-    <div className="w-full min-h-screen p-5 bg-base-300 grid place-items-center md:place-content-center gap-6 md:gap-8 md:pt-0">
+    <div className="w-full min-h-screen p-3 bg-base-300 grid place-items-center md:place-content-center gap-6 md:gap-8 md:pt-0">
       <div className="flex flex-col items-center justify-center gap-2">
         <Image
           src="/logo.png"
