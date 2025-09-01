@@ -31,7 +31,6 @@ export function PdfViewerClient({ pdfLink, pdfDoc }: PdfViewerClientProps) {
 
   const debounceTimeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
 
-
   const pageNavigationInstance = pageNavigationPlugin();
   const { jumpToNextPage, jumpToPreviousPage, jumpToPage } =
     pageNavigationInstance;
@@ -70,7 +69,10 @@ export function PdfViewerClient({ pdfLink, pdfDoc }: PdfViewerClientProps) {
       | React.FocusEvent<HTMLInputElement>
       | React.KeyboardEvent<HTMLInputElement>
   ) => {
-    const val = +e.currentTarget?.value > pdfDoc.totalPages ? pdfDoc.totalPages : +e.currentTarget?.value;
+    const val =
+      +e.currentTarget?.value > pdfDoc.totalPages
+        ? pdfDoc.totalPages
+        : +e.currentTarget?.value;
     pauseNavbarHiding();
     setCurrentPage(val);
     jumpToPage(val - 1);
@@ -89,11 +91,11 @@ export function PdfViewerClient({ pdfLink, pdfDoc }: PdfViewerClientProps) {
       await container.requestFullscreen();
       pauseNavbarHiding();
     }
-    jumpToPage(currentPage - 1)
+    jumpToPage(currentPage - 1);
     pauseUpdatingPage.current = false;
   };
 
-  const previousOffset = useRef<number>(0); 
+  const previousOffset = useRef<number>(0);
   useEffect(() => {
     const container = document.querySelector(".rpv-core__inner-pages");
     if (!container) return;
@@ -112,11 +114,76 @@ export function PdfViewerClient({ pdfLink, pdfDoc }: PdfViewerClientProps) {
     return () => container.removeEventListener("scroll", handleNavbarHide);
   }, [fullscreen]);
 
-  
+  const zoomInBtnRef = useRef<HTMLButtonElement>(null);
+  const zoomOutBtnRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const evCache: PointerEvent[] = []; // I am using Ev to denote event here
+    let prevDiff = -1;
+
+    function pointerDownHandler(e: PointerEvent) {
+      evCache.push(e);
+      console.log(evCache.length, evCache);
+    }
+
+    function pointerMoveHandler(e: PointerEvent) {
+      const index = evCache.findIndex(
+        (cachedEV: PointerEvent) => cachedEV.pointerId === e.pointerId
+      );
+      evCache[index] = e;
+      if (evCache.length == 2) {
+        pauseUpdatingPage.current = true;
+
+        const dx = evCache[0].clientX - evCache[1].clientX;
+        const dy = evCache[0].clientY - evCache[1].clientY;
+        const curDiff = Math.sqrt(dx * dx + dy * dy); // pythagoras theorem
+
+        if (prevDiff > 0) {
+          const threshold = 13;
+          if (curDiff > prevDiff + threshold) {
+            zoomInBtnRef.current?.click();
+          } else if (curDiff < prevDiff - threshold) {
+            zoomOutBtnRef.current?.click();
+          }
+          pauseUpdatingPage.current = false;
+        }
+        prevDiff = curDiff;
+      }
+    }
+    function pointerUpHandler(e: PointerEvent) {
+      const index = evCache.findIndex(
+        (cachedEv: PointerEvent) => cachedEv.pointerId === e.pointerId
+      );
+      console.log("test" + index);
+      evCache.splice(index, 1);
+      if (evCache.length < 2) {
+        prevDiff = -1;
+      }
+    }
+
+    container.addEventListener("pointermove", pointerMoveHandler);
+    container.addEventListener("pointerdown", pointerDownHandler);
+    container.addEventListener("pointerup", pointerUpHandler);
+    container.addEventListener("pointercancel", pointerUpHandler);
+    container.addEventListener("pointerleave", pointerUpHandler);
+    container.addEventListener("pointerout", pointerUpHandler);
+
+    return () => {
+      container.removeEventListener("pointermove", pointerMoveHandler);
+      container.removeEventListener("pointerdown", pointerDownHandler);
+      container.removeEventListener("pointerup", pointerUpHandler);
+      container.removeEventListener("pointercancel", pointerUpHandler);
+      container.removeEventListener("pointerleave", pointerUpHandler);
+      container.removeEventListener("pointerout", pointerUpHandler);
+    };
+  }, []);
 
   return (
     <div
-      className={`${fullscreen ? "" : "px-5 py-6 rounded-box"} relative flex  pt-0 pr-0 space-y-6 bg-base-200`}
+      className={`${fullscreen ? "" : "px-5 py-6 rounded-box"} relative flex touch-none pt-0 pr-0 space-y-6 bg-base-200`}
     >
       <div
         className={`overflow-y-auto w-full flex flex-col items-center  ${fullscreen ? "h-full pt-20" : " mt-20 h-[85vh]"} transition-[padding-top_250ms] ${hideNavbar ? "pt-[0]" : ""}`}
@@ -170,8 +237,8 @@ export function PdfViewerClient({ pdfLink, pdfDoc }: PdfViewerClientProps) {
               <button
                 className="btn btn-neutral aspect-square w-10 p-0"
                 onClick={() => {
-                  pauseNavbarHiding()
-                  jumpToNextPage(); 
+                  pauseNavbarHiding();
+                  jumpToNextPage();
                 }}
               >
                 <svg
@@ -196,6 +263,7 @@ export function PdfViewerClient({ pdfLink, pdfDoc }: PdfViewerClientProps) {
                 {(props: RenderZoomOutProps) => (
                   <button
                     className="btn btn-ghost btn-neutral  p-1 rounded-full aspect-square"
+                    ref={zoomOutBtnRef}
                     onClick={() => {
                       pauseNavbarHiding();
                       props.onClick();
@@ -223,6 +291,7 @@ export function PdfViewerClient({ pdfLink, pdfDoc }: PdfViewerClientProps) {
                 {(props: RenderZoomInProps) => (
                   <button
                     className="btn btn-ghost btn-neutral p-1 rounded-full aspect-square"
+                    ref={zoomInBtnRef}
                     onClick={() => {
                       pauseNavbarHiding();
                       props.onClick();
