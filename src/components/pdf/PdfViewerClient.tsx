@@ -22,11 +22,15 @@ interface PdfViewerClientProps {
 export function PdfViewerClient({ pdfLink, pdfDoc }: PdfViewerClientProps) {
   const [currentPage, setCurrentPage] = useState<number>(pdfDoc.progress);
   const [fullscreen, setFullscreen] = useState<boolean>(false);
-  const containerRef = useRef<HTMLDivElement | null>(null);
   const [hideNavbar, setHideNavBar] = useState<boolean>(false);
-  const manualPageChange = useRef<boolean>(false);
+
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
+  const manualPageChange = useRef<boolean>(false); // to pause hiding navbar
+  const pauseUpdatingPage = useRef<boolean>(false); // to pause the page Updating
 
   const debounceTimeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
+
 
   const pageNavigationInstance = pageNavigationPlugin();
   const { jumpToNextPage, jumpToPreviousPage, jumpToPage } =
@@ -44,6 +48,7 @@ export function PdfViewerClient({ pdfLink, pdfDoc }: PdfViewerClientProps) {
   }, []);
 
   const handlePageChange = (e: { currentPage: number }) => {
+    if (pauseUpdatingPage.current) return;
     const newPage = e.currentPage + 1;
     setCurrentPage(newPage);
 
@@ -65,27 +70,30 @@ export function PdfViewerClient({ pdfLink, pdfDoc }: PdfViewerClientProps) {
       | React.FocusEvent<HTMLInputElement>
       | React.KeyboardEvent<HTMLInputElement>
   ) => {
-    const val = +e.currentTarget?.value;
+    const val = +e.currentTarget?.value > pdfDoc.totalPages ? pdfDoc.totalPages : +e.currentTarget?.value;
     pauseNavbarHiding();
     setCurrentPage(val);
     jumpToPage(val - 1);
   };
 
-  const handleFullScreen = () => {
+  const handleFullScreen = async () => {
     const container = containerRef.current;
     if (!container) return;
+    pauseUpdatingPage.current = true;
 
     if (document.fullscreenElement) {
-      document.exitFullscreen();
       setFullscreen(false);
+      await document.exitFullscreen();
     } else {
-      container.requestFullscreen();
-      pauseNavbarHiding();
       setFullscreen(true);
+      await container.requestFullscreen();
+      pauseNavbarHiding();
     }
+    jumpToPage(currentPage - 1)
+    pauseUpdatingPage.current = false;
   };
 
-  const previousOffset = useRef<number>(0);
+  const previousOffset = useRef<number>(0); 
   useEffect(() => {
     const container = document.querySelector(".rpv-core__inner-pages");
     if (!container) return;
