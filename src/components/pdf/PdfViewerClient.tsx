@@ -88,10 +88,8 @@ export function PdfViewerClient({ pdfLink, pdfDoc }: PdfViewerClientProps) {
     pauseUpdatingPage.current = true;
 
     if (document.fullscreenElement) {
-      setFullscreen(false);
       await document.exitFullscreen();
     } else {
-      setFullscreen(true);
       await container.requestFullscreen();
       pauseNavbarHiding();
     }
@@ -99,6 +97,25 @@ export function PdfViewerClient({ pdfLink, pdfDoc }: PdfViewerClientProps) {
     pauseUpdatingPage.current = false;
   };
 
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleFullScreenManual = () => {
+      console.log(document.fullscreenElement)
+      if (document.fullscreenElement) {
+        setFullscreen(true);
+      } else {
+        setFullscreen(false);
+      }
+    }
+    container.addEventListener("fullscreenchange", handleFullScreenManual);
+    return () => {
+      container?.removeEventListener("fullscreenchange", handleFullScreenManual);
+    };
+  });
+
+  // handling hiding navbar
   const previousOffset = useRef<number>(0);
   useEffect(() => {
     const container = document.querySelector(".rpv-core__inner-pages");
@@ -121,6 +138,7 @@ export function PdfViewerClient({ pdfLink, pdfDoc }: PdfViewerClientProps) {
   const zoomInBtnRef = useRef<HTMLButtonElement>(null);
   const zoomOutBtnRef = useRef<HTMLButtonElement>(null);
 
+  // handling pinch gestures
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
