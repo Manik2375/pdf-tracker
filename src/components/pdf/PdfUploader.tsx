@@ -8,6 +8,8 @@ import * as pdfjsLib from "pdfjs-dist";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf.worker.js";
 
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
+
 interface PdfUploaderProps {
   onSuccessfulUploadAction: () => void;
 }
@@ -23,7 +25,7 @@ interface Pdfinfo {
 
 async function uploadPdf(
   file: File,
-  folderName?: string,
+  folderName?: string
 ): Promise<{ public_id: string; folder: string }> {
   try {
     const { signature, timestamp, folder, cloudName, apiKey } =
@@ -41,7 +43,7 @@ async function uploadPdf(
       {
         method: "POST",
         body: formData,
-      },
+      }
     ).then((res) => res.json());
 
     return { public_id: uploadResponse.public_id, folder: folder };
@@ -63,9 +65,19 @@ export const PdfUploader = ({ onSuccessfulUploadAction }: PdfUploaderProps) => {
     setSuccess(false);
     const file = event.target.files?.[0];
     if (!file) {
-      alert("Error uploading file");
+      alert("Error uploading file. Make sure file is selected");
       return;
     }
+
+    const sizeBytes = file.size;
+    const sizeMB = +(sizeBytes / (1024 * 1024)).toFixed(2);
+
+    if (sizeBytes > MAX_FILE_SIZE) {
+      alert(`File size is too large (${sizeMB} MB). Maximum allowed is 10MB`);
+      if (inputRef.current) inputRef.current.value = "";
+      return;
+    }
+
     setLoading(true);
 
     try {
