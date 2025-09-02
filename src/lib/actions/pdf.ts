@@ -56,7 +56,7 @@ export async function deletePdf(pdfId: string, cloudinaryPublicId: string) {
       resource_type: "image",
     });
     const resultMetaData = await deletePdfMetaData(pdfId);
-    console.log(pdfId, result);
+    console.log(`Deleting PDF with id: ${pdfId}`, result);
     if (result.result === "ok" && resultMetaData.success) {
       {
         return {
