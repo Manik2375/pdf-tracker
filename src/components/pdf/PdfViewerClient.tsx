@@ -123,7 +123,7 @@ export function PdfViewerClient({ pdfLink, pdfDoc }: PdfViewerClientProps) {
     const handleNavbarHide = () => {
       if (!fullscreen || manualPageChange.current) return;
       const diff = container.scrollTop - previousOffset.current;
-      if (diff > 30) {
+      if (diff > 30 && (container.scrollHeight - container.scrollTop) > 1000) {
         setHideNavBar(true);
       } else if (diff < -20) {
         setHideNavBar(false);
