@@ -21,7 +21,7 @@ const pages = [
 export default function NavBar() {
   const [loading, setLoading] = useState<boolean>(false);
   const { data: session } = useSession();
-  if (!session) return <p>User isn&apos;t authenticated</p>;
+  if (!session) return <div className="skeleton bg-base-200 w-full px-10 h-16 shadow-sm rounded-box"></div>;;
   return (
     <div className="navbar bg-base-200 shadow-sm rounded-box px-10">
       <div className="navbar-start">

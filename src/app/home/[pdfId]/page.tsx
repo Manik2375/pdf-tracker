@@ -21,7 +21,7 @@ export default function PDFViewer({
 
   const pdfLink = `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/${pdfData?.cloudinaryPublicId}`;
   if (!pdfData) {
-    return <p>No PDF found.</p>;
+    return <div className="skeleton h-full w-full"></div>;;
   }
 
   return <PdfViewerClient pdfLink={pdfLink} pdfDoc={pdfData} />;
