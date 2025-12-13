@@ -22,7 +22,7 @@
     "cloudinary": "^2.7.0",
     "mongodb": "^6.17.0",
     "mongoose": "^8.15.2",
-    "next": "15.3.3",
+    "next": "^15.3.8",
     "next-auth": "^5.0.0-beta.28",
     "pdfjs-dist": "^3.4.120",
     "react": "^19.0.0",
