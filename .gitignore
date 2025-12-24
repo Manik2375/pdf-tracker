@@ -45,3 +45,4 @@ next-env.d.ts
 qodana.yaml
 
 public/test.pdf
+.env*.local
