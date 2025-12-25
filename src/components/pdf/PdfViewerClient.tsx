@@ -9,6 +9,7 @@ import { pageNavigationPlugin } from "@react-pdf-viewer/page-navigation";
 
 import "@react-pdf-viewer/core/lib/styles/index.css";
 import "@react-pdf-viewer/zoom/lib/styles/index.css";
+import { useTheme } from "@/context/ThemeProvider";
 
 interface PdfViewerClientProps {
 	pdfLink: string;
@@ -29,14 +30,13 @@ export function PdfViewerClient({ pdfLink, pdfDoc }: PdfViewerClientProps) {
 
 	const debounceTimeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
 
-	const [theme, setTheme] = useState<"light" | "dark">(
-		window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
-	);
 
 	const pageNavigationInstance = pageNavigationPlugin();
 	const { jumpToNextPage, jumpToPreviousPage, jumpToPage } = pageNavigationInstance;
 	const zoomPluginInstance = zoomPlugin();
 	const { ZoomIn, ZoomOut } = zoomPluginInstance;
+
+	const theme = useTheme();
 
 	// avoid the hiding of navbar here
 	const pauseNavbarHiding = useCallback(() => {
@@ -115,6 +115,7 @@ export function PdfViewerClient({ pdfLink, pdfDoc }: PdfViewerClientProps) {
 			pauseUpdatingPage.current = false;
 		});
 		return () => clearTimeout(id);
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [fullscreen]);
 
 	// handling hiding navbar
@@ -205,15 +206,6 @@ export function PdfViewerClient({ pdfLink, pdfDoc }: PdfViewerClientProps) {
 		};
 	}, []);
 
-	useEffect(() => {
-		const darkThemeMedia = window.matchMedia("(prefers-color-scheme: dark)");
-		const onChange = (e: MediaQueryListEvent) =>
-			e.matches ? setTheme("dark") : setTheme("light");
-		darkThemeMedia.addEventListener("change", onChange);
-		return () => {
-			darkThemeMedia.removeEventListener("change", onChange);
-		};
-	}, []);
 	return (
 		<div
 			className={`${fullscreen ? "" : "px-5 py-6 rounded-box"} relative flex touch-none pt-0 pr-0 space-y-6 bg-base-200`}
