@@ -215,7 +215,7 @@ export default function Home() {
 				<a
 					href="https://github.com/Manik2375/pdf-tracker"
 					target="_blank"
-					className="flex items-center gap-2 px-7 py-2 bg-base-100 top-full hover:bg-base-200 rounded-t-xl"
+					className="flex items-center gap-2 h-full px-7 py-2 bg-base-100 top-full hover:bg-base-200 rounded-t-xl"
 				>
 					<Image
 						src={theme.theme == "light" ? "/github-mark.svg" : "/github-mark-white.svg"}
